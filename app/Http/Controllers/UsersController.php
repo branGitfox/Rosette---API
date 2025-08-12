@@ -17,11 +17,13 @@ POUR LA CREATION D'UN UTILISATEUR
 
         $fields = $request->validate([
             'name' => 'required|string',
+            'firstname' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|confirmed',
             'role' => 'required',
         ], [
             'name.required' => 'Le nom est obligatoire',
+            'firstname.required' => 'Le prenom est obligatoire',
             'email.required' => 'L\'email est obligatoire',
             'password.required' => 'Le mot de passe est obligatoire',
             'email.unique' => "l'email est deja prise",
