@@ -9,6 +9,6 @@ class Acs extends Model
 {
 
     protected $fillable = ['annee'];
-    protected $table = 'acs';
+
 
 }
