@@ -29,4 +29,10 @@ class AcController extends Controller
         Acs::create($fields);
         return response()->json(['message' => 'Annee scolaire cree']);
     }
+
+
+    //RECUPERATION DE L'HISTORIQUE DE CREATION AVEC MOIS
+    public function list(){
+        return response()->json(Acs::query()->with(['mois'])->get());
+    }
 }

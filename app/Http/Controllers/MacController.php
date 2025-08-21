@@ -11,4 +11,6 @@ class MacController extends Controller
     public function create($mois, $id_ac) {
         Mac::create(['mois' => $mois, 'id_ac' => $id_ac]);
     }
+
+
 }

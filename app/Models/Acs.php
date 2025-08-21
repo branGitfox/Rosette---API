@@ -10,5 +10,7 @@ class Acs extends Model
 
     protected $fillable = ['annee'];
 
-
+    public function mois() {
+        return $this->hasMany('App\Models\Mac', 'id_ac', 'annee');
+    }
 }
