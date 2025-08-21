@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mois_annee_scolaire', function (Blueprint $table) {
+        Schema::create('mac', function (Blueprint $table) {
             $table->id('mac_id')->autoIncrement();
             $table->string('mois');
             $table->integer('id_ac');

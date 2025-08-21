@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('annee_scolaire', function (Blueprint $table) {
+        Schema::create('acs', function (Blueprint $table) {
             $table->id('ac_id')->autoIncrement();
-            $table->string('annee')->unique();
+            $table->string('annee');
             $table->timestamps();
         });
     }
