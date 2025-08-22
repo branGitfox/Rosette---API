@@ -34,13 +34,13 @@ class AcController extends Controller
 
     //RECUPERATION DE L'HISTORIQUE DE CREATION AVEC MOIS
     public function list(){
-        return response()->json(Acs::query()->with(['mois'])->get());
+        return response()->json(Acs::query()->orderByDesc('created_at')->with(['mois'])->get());
     }
 
     public function delete($id){
        $acs = Acs::findOrFail($id);
-        Mac::with('ac')->delete();
+         Mac::query()->where('id_ac', $acs->annee)->delete();
         $acs->delete();
-        return response()->json(['message', 'Annee Scolaire supprimé']);
+        return response()->json(['message' => 'Annee Scolaire supprimé']);
     }
 }
