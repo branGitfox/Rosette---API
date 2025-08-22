@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AcModel;
 use App\Models\Acs;
+use App\Models\Mac;
 use Illuminate\Http\Request;
 
 class AcController extends Controller
@@ -34,5 +35,12 @@ class AcController extends Controller
     //RECUPERATION DE L'HISTORIQUE DE CREATION AVEC MOIS
     public function list(){
         return response()->json(Acs::query()->with(['mois'])->get());
+    }
+
+    public function delete($id){
+       $acs = Acs::findOrFail($id);
+        Mac::with('ac')->delete();
+        $acs->delete();
+        return response()->json(['message', 'Annee Scolaire supprimé']);
     }
 }

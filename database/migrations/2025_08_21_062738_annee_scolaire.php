@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('acs', function (Blueprint $table) {
-            $table->id('ac_id')->autoIncrement();
+            $table->id()->autoIncrement();
             $table->string('annee');
             $table->timestamps();
         });
