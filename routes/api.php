@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,6 @@ Route::post('/ac-creation', [AcController::class, 'create']);
 Route::get('/ac-list', [AcController::class, 'list']);
 Route::delete('/ac-delete/{id}', [AcController::class, 'delete']);
 
+
+//ROUTE POUR CLASSES
+Route::post('/classes-creation', [ClassesController::class, 'create']);

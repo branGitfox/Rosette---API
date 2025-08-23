@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('acs', function (Blueprint $table) {
+        Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->string('annee');
+            $table->string('nom_classe');
+            $table->integer('ecolage');
+            $table->unsignedBigInteger('ac_id');
+            $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
             $table->timestamps();
+
         });
     }
 

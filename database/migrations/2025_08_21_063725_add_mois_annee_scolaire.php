@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('macs', function (Blueprint $table) {
-            $table->id()->autoIncrement();
+            $table->id();
             $table->string('mois');
             $table->string('id_ac');
             $table->timestamps();
