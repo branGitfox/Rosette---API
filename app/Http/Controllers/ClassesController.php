@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acs;
 use App\Models\Classes;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class ClassesController extends Controller
     public function create(Request $request){
         $fields = $request->validate([
             'nom_classe' => 'required',
-            'ac_id' => 'required|exists:acs,id',
+            'ac_id' => 'required',
             'ecolage' => 'required|integer'
         ],
 
@@ -24,8 +25,14 @@ class ClassesController extends Controller
             'ecolage.integer' => 'Ecolage doit etre en chiffre'
         ]
         );
+        $takeAnneId = Acs::where('annee', $fields['ac_id'])->first()->id;
 
-        Classes::create($fields);
+        Classes::create([
+            'nom_classe' => $fields['nom_classe'],
+            'ac_id' => $takeAnneId,
+            'ecolage' => $fields['ecolage'],
+
+        ]);
         return response()->json(['message' => "classe Creé"]);
     }
 }

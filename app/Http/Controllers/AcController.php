@@ -37,10 +37,19 @@ class AcController extends Controller
         return response()->json(Acs::query()->orderByDesc('created_at')->with(['mois'])->get());
     }
 
+    //SUPPRESSION ANNE SCOLAIRE AVEC MOIS
     public function delete($id){
        $acs = Acs::findOrFail($id);
          Mac::query()->where('id_ac', $acs->annee)->delete();
         $acs->delete();
         return response()->json(['message' => 'Annee Scolaire supprimé']);
     }
+
+
+    //RECUPERATION LA LISTE D"ANNEE SCOLAIRE
+
+    public function listAnnee() {
+        return response()->json(Acs::all());
+    }
+
 }

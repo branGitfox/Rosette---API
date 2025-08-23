@@ -19,8 +19,9 @@ Route::post('/users-connexion', [UsersController::class, 'connexion']);
 //ROUTE POUR ANNEE SCOLAIRE
 Route::post('/ac-creation', [AcController::class, 'create']);
 Route::get('/ac-list', [AcController::class, 'list']);
+Route::get('/ac-list-no-month', [AcController::class, 'listAnnee']);
 Route::delete('/ac-delete/{id}', [AcController::class, 'delete']);
 
 
 //ROUTE POUR CLASSES
-Route::post('/classes-creation', [ClassesController::class, 'create']);
+Route::post('/classe-creation', [ClassesController::class, 'create']);
