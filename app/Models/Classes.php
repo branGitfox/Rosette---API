@@ -11,4 +11,8 @@ class Classes extends Model
         'ac_id',
         'ecolage'
     ];
+
+    public function acs() {
+        return $this->belongsTo('App\Models\Acs', 'ac_id', 'id');
+    }
 }

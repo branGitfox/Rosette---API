@@ -35,4 +35,10 @@ class ClassesController extends Controller
         ]);
         return response()->json(['message' => "classe Creé"]);
     }
+
+    //RECUPERATION HISTORIQUE
+
+    public function list() {
+        return response()->json([Classes::with('acs')->get()]);
+    }
 }

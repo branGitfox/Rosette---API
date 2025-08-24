@@ -25,3 +25,4 @@ Route::delete('/ac-delete/{id}', [AcController::class, 'delete']);
 
 //ROUTE POUR CLASSES
 Route::post('/classe-creation', [ClassesController::class, 'create']);
+Route::get('/classe-list', [ClassesController::class, 'list']);
