@@ -39,6 +39,13 @@ class ClassesController extends Controller
     //RECUPERATION HISTORIQUE
 
     public function list() {
-        return response()->json([Classes::with('acs')->get()]);
+        return response()->json(Classes::with('acs')->get());
+    }
+
+
+    public function delete($id){
+        Classes::findOrFail($id)->delete();
+
+        return response()->json(['message' => 'Classe supprimé']);
     }
 }
