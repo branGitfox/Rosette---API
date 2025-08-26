@@ -32,3 +32,4 @@ Route::delete('/classe-delete/{id}', [ClassesController::class, 'delete']);
 //Route POUR SALLE
 Route::post('salle-creation', [SallesController::class, 'create']);
 Route::get('salle-list', [SallesController::class, 'list']);
+Route::delete('salle-delete/{id}', [SallesController::class, 'delete']);
