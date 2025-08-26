@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\SallesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,3 +28,7 @@ Route::delete('/ac-delete/{id}', [AcController::class, 'delete']);
 Route::post('/classe-creation', [ClassesController::class, 'create']);
 Route::get('/classe-list', [ClassesController::class, 'list']);
 Route::delete('/classe-delete/{id}', [ClassesController::class, 'delete']);
+
+//Route POUR SALLE
+Route::post('salle-creation', [SallesController::class, 'create']);
+Route::get('salle-list', [SallesController::class, 'list']);
