@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acs;
 use App\Models\Admissions;
+use Error;
 use Illuminate\Http\Request;
 
 class AdmissionsController extends Controller
@@ -12,20 +14,24 @@ class AdmissionsController extends Controller
     public function create(Request $request){
         $fields =$request->validate([
             'note' => 'required|integer',
-            'ac_id' => 'required|exists:acs,id'
+            'ac_id' => 'required'
         ],
         [
             'note.required' => 'Note est requis',
             'note.integer' => 'Note doit etre un entier',
             'ac_id.required' => 'Annee scolaire est requis',
-            'ac_id.exists' => 'Annee scolaire n\'existe pas'
         ]);
-
-       $admission =  Admissions::where('ac_id', $fields['ac_id'])->first();
+        $ac_id = Acs::where('annee',$fields['ac_id'])->first()->id;
+       $admission =  Admissions::where('ac_id', $ac_id)->first();
         if($admission){
-            return response()->json(['message' => 'Note deja defini pour cette année scolaire']);
+
+            throw  new Error('Note deja defini pour cette année scolaire');
         }else{
-            Admissions::create($fields);
+            $takeAcId = Acs::where('annee',$fields['ac_id'])->first()->id;
+            Admissions::create([
+                'note' => $fields['note'],
+                'ac_id' => $takeAcId,
+            ]);
             return response()->json(['message' => 'Admission creé']);
         }
     }
