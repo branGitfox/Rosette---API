@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcController;
+use App\Http\Controllers\AdmissionsController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\SallesController;
 use App\Http\Controllers\UsersController;
@@ -33,3 +34,7 @@ Route::delete('/classe-delete/{id}', [ClassesController::class, 'delete']);
 Route::post('salle-creation', [SallesController::class, 'create']);
 Route::get('salle-list', [SallesController::class, 'list']);
 Route::delete('salle-delete/{id}', [SallesController::class, 'delete']);
+
+//ROUTE POUR REGLAGE D"ADMISSION
+Route::post('admission-creation', [AdmissionsController::class, 'create']);
+
