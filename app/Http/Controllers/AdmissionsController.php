@@ -30,4 +30,13 @@ class AdmissionsController extends Controller
         }
     }
 
+    public function list(){
+        return response()->json(Admissions::with('acs')->get());
+    }
+
+    public function delete($id){
+        Admissions::findOrFail($id)->delete();
+        return response()->json(['message' => 'Reglage supprimé']);
+    }
+
 }

@@ -37,4 +37,6 @@ Route::delete('salle-delete/{id}', [SallesController::class, 'delete']);
 
 //ROUTE POUR REGLAGE D"ADMISSION
 Route::post('admission-creation', [AdmissionsController::class, 'create']);
+Route::get('admission-list', [AdmissionsController::class, 'list']);
+Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete']);
 

@@ -10,4 +10,8 @@ class Admissions extends Model
         'note',
         'ac_id'
     ];
+
+    public function acs() {
+        return $this->belongsTo(Acs::class, 'ac_id', 'id');
+    }
 }
