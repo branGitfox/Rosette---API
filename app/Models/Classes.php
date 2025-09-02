@@ -9,7 +9,10 @@ class Classes extends Model
     protected $fillable = [
         'nom_classe',
         'ac_id',
-        'ecolage'
+        'ecolage',
+        'droit',
+        'kermesse',
+
     ];
 
     public function acs() {

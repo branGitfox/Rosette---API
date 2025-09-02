@@ -14,7 +14,10 @@ class ClassesController extends Controller
         $fields = $request->validate([
             'nom_classe' => 'required',
             'ac_id' => 'required',
-            'ecolage' => 'required|integer'
+            'ecolage' => 'required|integer',
+            'droit' => 'required|integer',
+            'kermesse' => 'required|integer',
+
         ],
 
         [
@@ -22,7 +25,11 @@ class ClassesController extends Controller
             'ac_id.required' => 'Anne scolaire  obligatoire',
             'ac_id.exists' => 'Cette Annee Scolaire n\'existe pas',
             'ecolage.required' => 'Ecolage  obligatoire',
-            'ecolage.integer' => 'Ecolage doit etre en chiffre'
+            'ecolage.integer' => 'Ecolage doit etre en chiffre',
+            'droit.required' => 'Droit  obligatoire',
+            'droit.integer' => 'Droit doit etre en chiffre',
+            'kermesse.required' => 'Kermesse  obligatoire',
+            'kermesse.integer' => 'Kermesse doit etre en chiffre'
         ]
         );
         $takeAnneId = Acs::where('annee', $fields['ac_id'])->first()->id;
@@ -31,6 +38,8 @@ class ClassesController extends Controller
             'nom_classe' => $fields['nom_classe'],
             'ac_id' => $takeAnneId,
             'ecolage' => $fields['ecolage'],
+            'droit' => $fields['droit'],
+            'kermesse' => $fields['kermesse'],
 
         ]);
         return response()->json(['message' => "classe Creé"]);
