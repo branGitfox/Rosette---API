@@ -3,6 +3,7 @@
 use App\Http\Controllers\AcController;
 use App\Http\Controllers\AdmissionsController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\EtudiantsController;
 use App\Http\Controllers\SallesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
@@ -39,4 +40,8 @@ Route::delete('salle-delete/{id}', [SallesController::class, 'delete']);
 Route::post('admission-creation', [AdmissionsController::class, 'create']);
 Route::get('admission-list', [AdmissionsController::class, 'list']);
 Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete']);
+
+
+//ROUTE POUR ETUDIANTs
+Route::post('etudiant-creation', [EtudiantsController::class, 'inscription']);
 
