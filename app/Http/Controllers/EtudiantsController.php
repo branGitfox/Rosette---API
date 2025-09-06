@@ -11,7 +11,7 @@ class EtudiantsController extends Controller
 {
     //INSCRIPTION D'UN ETUDIANT
 
-    public function inscription(Request $request, SousetudiantsController $sousetudiants){
+    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage){
         $fields = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
@@ -64,7 +64,9 @@ class EtudiantsController extends Controller
 
         $et_id = DB::table('etudiants')->latest()->first()->id;
         $ac_id = DB::table('acs')->latest()->first()->id;
+        $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
         $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
+        $ecolage->increment($ac_id, $montant_ecolage);
         return response()->json(['message' => 'ok']);
 
 
