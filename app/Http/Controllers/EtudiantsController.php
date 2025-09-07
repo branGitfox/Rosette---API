@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acs;
 use App\Models\Etudiants;
 
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ class EtudiantsController extends Controller
 {
     //INSCRIPTION D'UN ETUDIANT
 
-    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse){
+    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
         $fields = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
@@ -64,6 +65,7 @@ class EtudiantsController extends Controller
 
         $et_id = DB::table('etudiants')->latest()->first()->id;
         $ac_id = DB::table('acs')->latest()->first()->id;
+        $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
         $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
         $montant_droit = DB::table('classes')->latest()->first()->droit;
         $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
@@ -71,6 +73,17 @@ class EtudiantsController extends Controller
         $ecolage->increment($ac_id, $montant_ecolage);
         $droit->increment($ac_id, $montant_droit);
         $kermesse->increment($ac_id, $montant_kermesse);
+        $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
+
+        foreach($mois_list->mois as $index => $m){
+            if($index === 0){
+                $payé = true;
+            }else{
+                $payé = false;
+            }
+
+            $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+        }
         return response()->json(['message' => 'ok']);
 
 
