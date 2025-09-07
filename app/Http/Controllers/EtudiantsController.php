@@ -11,7 +11,7 @@ class EtudiantsController extends Controller
 {
     //INSCRIPTION D'UN ETUDIANT
 
-    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit){
+    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse){
         $fields = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
@@ -66,9 +66,11 @@ class EtudiantsController extends Controller
         $ac_id = DB::table('acs')->latest()->first()->id;
         $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
         $montant_droit = DB::table('classes')->latest()->first()->droit;
+        $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
         $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
         $ecolage->increment($ac_id, $montant_ecolage);
         $droit->increment($ac_id, $montant_droit);
+        $kermesse->increment($ac_id, $montant_kermesse);
         return response()->json(['message' => 'ok']);
 
 
