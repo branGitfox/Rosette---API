@@ -44,4 +44,5 @@ Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete']);
 
 //ROUTE POUR ETUDIANTs
 Route::post('etudiant-creation', [EtudiantsController::class, 'inscription']);
+Route::get('etudiant-matricule', [EtudiantsController::class, 'matricule']);
 

@@ -35,6 +35,17 @@ class EtudiantsController extends Controller
             'cl_id' => 'required',
             'sa_id' =>'required',
 
+        ], [
+            'nom.required' => 'Le nom est obligatoire.',
+            'prenom.required' => 'Le prénom est obligatoire.',
+            'sexe.required' => 'Le sexe est obligatoire.',
+            'dateNaissance.required' => 'La date de naissance est obligatoire.',
+            'lieuNaissance.required' => 'Le lieu de naissance est obligatoire.',
+            'adresse.required' => 'L’adresse est obligatoire.',
+            'matricule.required' => 'Le matricule est obligatoire.',
+            'enfantProf.required' => 'Veuillez indiquer si l’élève est enfant de professeur.',
+            'cl_id.required' => 'La classe est obligatoire.',
+            'sa_id.required' => 'La salle est obligatoire.',
         ]);
 
         if($request->file('photo') !== NULL){
@@ -89,10 +100,17 @@ class EtudiantsController extends Controller
 
             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
         }
-        return response()->json(['message' => 'ok']);
+        return response()->json(['message' => 'Etudiant inscrit']);
 
 
 
+    }
+
+
+    //POUR CREER UN MATRICULE UNIQUE D'UN ETUDIANT
+
+    public function matricule() {
+        return response()->json(['matricule' => 'ROS'.date('y').'-'.DB::table('etudiants')->latest()->first()->id]);
     }
 
 }
