@@ -37,9 +37,14 @@ class EtudiantsController extends Controller
 
         ]);
 
-    $file =  $request->file('photo');
+        if($request->file('photo') !== NULL){
+            $file =  $request->file('photo');
+            $image =  $file->store('uploads', 'public');
+            $image_treated = explode('/',$image)[1];
+        }else{
+            $image_treated =  'default.png';
+        }
 
-       $image =  $file->store('uploads', 'public');
 
         Etudiants::create([
             'nom' => $fields['nom'],
@@ -49,7 +54,7 @@ class EtudiantsController extends Controller
             'lieuNaissance' => $fields['lieuNaissance'],
             'adresse' => $fields['adresse'],
             'matricule' => $fields['matricule'],
-            'photo' => explode('/',$image)[1],
+            'photo' => $image_treated,
             'enfantProf' => $fields['enfantProf'],
             'nomPere' => $fields['nomPere'],
             'nomMere' => $fields['nomMere'],
