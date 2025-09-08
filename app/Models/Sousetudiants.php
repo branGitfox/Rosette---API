@@ -13,6 +13,7 @@ class Sousetudiants extends Model
         'et_id',
         'note1',
         'note2',
-        'note3'
+        'note3',
+        'status_admissions',
     ];
 }
