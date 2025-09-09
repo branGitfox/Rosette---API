@@ -113,4 +113,11 @@ class EtudiantsController extends Controller
         return response()->json(['matricule' => 'ROS'.date('y').'-'.DB::table('etudiants')->latest()->first()->id]);
     }
 
+
+    //RECUPERATION DE LA LISTE D'ETUDIANT
+
+    public function list(){
+        return response()->json([Etudiants::with('sousetudiants', 'sousetudiants.classe', 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage')->orderBy('created_at', 'desc')->paginate(12)]);
+    }
+
 }

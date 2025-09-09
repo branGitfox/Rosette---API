@@ -16,4 +16,21 @@ class Sousetudiants extends Model
         'note3',
         'status_admissions',
     ];
+
+    public function classe(){
+        return $this->belongsTo(Classes::class, 'cl_id', 'id');
+    }
+    public function salle(){
+        return $this->belongsTo(Salles::class, 'sa_id', 'id');
+    }
+
+    public function annee() {
+            return $this->belongsTo(Acs::class, 'ac_id', 'id');
+    }
+
+    public function ecolage() {
+        return $this->hasMany(Moisecolage::class, 'et_id', 'id');
+    }
+
+
 }

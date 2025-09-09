@@ -27,4 +27,9 @@ class Etudiants extends Model
         'enfantProf',
         'photo',
     ];
+
+    public function sousetudiants() {
+        return $this->hasMany(Sousetudiants::class, 'et_id', 'id');
+    }
+
 }
