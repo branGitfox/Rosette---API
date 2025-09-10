@@ -117,7 +117,13 @@ class EtudiantsController extends Controller
     //RECUPERATION DE LA LISTE D'ETUDIANT
 
     public function list(){
-        return response()->json([Etudiants::with('sousetudiants', 'sousetudiants.classe', 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage')->orderBy('created_at', 'desc')->paginate(12)]);
+        $lignes = request()->query('lines');
+        $sexe = request()->query('sexe');
+        $year = request()->query('annee');
+        $classe = request()->query('classe');
+        $salle = request()->query('salle');
+        $q = request()->query('q');
+        return response()->json(Etudiants::sexe($sexe)->year($year)->classe($classe)->salle($salle)->where('nom', 'like', '%'.$q.'%')->where('prenom', 'like', '%'.$q.'%')->with('sousetudiants', 'sousetudiants.classe', 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage')->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
 }
