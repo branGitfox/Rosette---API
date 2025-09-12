@@ -20,4 +20,9 @@ class SousetudiantsController extends Controller
             'et_id' => $et_id,
         ]);
     }
+
+    public function update($id, $request){
+        Sousetudiants::findOrFail($id)->update($request);
+    }
+
 }

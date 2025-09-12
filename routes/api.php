@@ -46,4 +46,7 @@ Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete']);
 Route::post('etudiant-creation', [EtudiantsController::class, 'inscription']);
 Route::get('etudiant-matricule', [EtudiantsController::class, 'matricule']);
 Route::get('etudiant-list', [EtudiantsController::class, 'list']);
+Route::get('etudiant/{id}', [EtudiantsController::class, 'etudiant']);
+Route::post('etudiant/{id}', [EtudiantsController::class, 'updates']);
+Route::delete('etudiant/{id}', [EtudiantsController::class, 'deletes']);
 
