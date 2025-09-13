@@ -17,6 +17,7 @@ class SousetudiantsController extends Controller
             'note1' => $note1,
             'note2' => $note2,
             'note3' => $note3,
+            'noteTotal' =>NULL,
             'et_id' => $et_id,
         ]);
     }

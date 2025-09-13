@@ -9,6 +9,7 @@ use App\Models\Sousetudiants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class EtudiantsController extends Controller
 {
     //INSCRIPTION D'UN ETUDIANT
@@ -178,8 +179,10 @@ class EtudiantsController extends Controller
             $file =  $request->file('photo');
             $image =  $file->store('uploads', 'public');
             $image_treated = explode('/',$image)[1];
+
         }else{
-            $image_treated = $etudiant->photo; ;
+            $image_treated = $etudiant->photo;
+
         }
         $etudiant->update([
             'nom' => $fields['nom'],
