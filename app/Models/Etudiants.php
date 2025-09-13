@@ -46,7 +46,7 @@ class Etudiants extends Model
         if($annee == 0){
             return $query;
         }else{
-            return $query->where('ac_id', $annee);
+            return $query->Where('ac_id', $annee);
         }
 
     }

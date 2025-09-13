@@ -129,7 +129,7 @@ class EtudiantsController extends Controller
         $classe = request()->query('classe');
         $salle = request()->query('salle');
         $q = request()->query('q');
-        return response()->json(Etudiants::sexe($sexe)->year($year)->classe($classe)->salle($salle)->where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->with('sousetudiants', 'sousetudiants.classe', 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage')->orderBy('created_at', 'desc')->paginate($lignes));
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->year($year)->classe($classe)->salle($salle)->with('sousetudiants', 'sousetudiants.classe', 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage')->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
     //RECUPERATION D'UN ETUDIANT
