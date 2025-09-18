@@ -6,6 +6,7 @@ use App\Models\Acs;
 use App\Models\Etudiants;
 
 use App\Models\Sousetudiants;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -106,6 +107,9 @@ class EtudiantsController extends Controller
 
             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
         }
+
+
+
         return response()->json(['message' => 'Etudiant inscrit']);
 
 
@@ -130,6 +134,19 @@ class EtudiantsController extends Controller
         $salle = request()->query('salle');
         $q = request()->query('q');
         return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->year($year)->classe($classe)->salle($salle)->with('sousetudiants', 'sousetudiants.classe', 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage')->orderBy('created_at', 'desc')->paginate($lignes));
+    }
+
+    //RECUPERATION DE LA LISTE D'ETUDIANT PAGE GESTION NOTE
+
+    public function list_note(){
+        $lignes = request()->query('lines');
+        $sexe = request()->query('sexe');
+        $year = request()->query('annee');
+        $classe = request()->query('classe');
+        $salle = request()->query('salle');
+        $q = request()->query('q');
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->with(['sousetudiants'  => fn($q) => $q->where('ac_id', 1),
+            'sousetudiants.classe' , 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage' ]   )->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
     //RECUPERATION D'UN ETUDIANT

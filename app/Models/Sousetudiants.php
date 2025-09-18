@@ -14,6 +14,7 @@ class Sousetudiants extends Model
         'note1',
         'note2',
         'note3',
+        'noteTotal',
         'status_admissions',
     ];
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->boolean('payé')->default(false);
             $table->timestamps();
             $table->unsignedBigInteger('et_id');
-            $table->foreign('et_id')->references('id')->on('etudiants')->cascadeOnDelete();
+            $table->foreign('et_id')->references('id')->on('sousetudiants')->cascadeOnDelete();
             $table->unsignedBigInteger('ac_id');
             $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
         });

@@ -21,13 +21,13 @@ class AdmissionsController extends Controller
             'note.integer' => 'Note doit etre un entier',
             'ac_id.required' => 'Annee scolaire est requis',
         ]);
-        $ac_id = Acs::where('annee',$fields['ac_id'])->first()->id;
+        $ac_id = Acs::findOrFail($fields['ac_id'])->id;
        $admission =  Admissions::where('ac_id', $ac_id)->first();
         if($admission){
 
             throw  new Error('Note deja defini pour cette année scolaire');
         }else{
-            $takeAcId = Acs::where('annee',$fields['ac_id'])->first()->id;
+            $takeAcId = Acs::where('id',$fields['ac_id'])->first()->id;
             Admissions::create([
                 'note' => $fields['note'],
                 'ac_id' => $takeAcId,

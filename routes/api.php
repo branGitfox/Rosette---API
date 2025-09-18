@@ -5,6 +5,7 @@ use App\Http\Controllers\AdmissionsController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\EtudiantsController;
 use App\Http\Controllers\SallesController;
+use App\Http\Controllers\SousetudiantsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,12 +41,15 @@ Route::delete('salle-delete/{id}', [SallesController::class, 'delete']);
 Route::post('admission-creation', [AdmissionsController::class, 'create']);
 Route::get('admission-list', [AdmissionsController::class, 'list']);
 Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete']);
-
+//SOUSETUDIANTS
+Route::put('etudiant-note/{id}', [SousetudiantsController::class, 'update_note']);
 
 //ROUTE POUR ETUDIANTs
 Route::post('etudiant-creation', [EtudiantsController::class, 'inscription']);
 Route::get('etudiant-matricule', [EtudiantsController::class, 'matricule']);
 Route::get('etudiant-list', [EtudiantsController::class, 'list']);
+Route::get('etudiant-list_note', [EtudiantsController::class, 'list_note']);
+
 Route::get('etudiant/{id}', [EtudiantsController::class, 'etudiant']);
 Route::post('etudiant/{id}', [EtudiantsController::class, 'updates']);
 Route::delete('etudiant/{id}', [EtudiantsController::class, 'deletes']);

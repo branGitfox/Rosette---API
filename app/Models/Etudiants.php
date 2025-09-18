@@ -51,6 +51,16 @@ class Etudiants extends Model
 
     }
 
+    public function scopeYearNote($query, $annee){
+        if($annee == 0){
+            return $query;
+        }else{
+            return $query->whereHas('sousetudiants', function($q) use($annee){
+                $q->where('ac_id', $annee);
+            });
+        }
+
+    }
     public function scopeClasse($query, $classe){
         if($classe == 0){
             return $query;
