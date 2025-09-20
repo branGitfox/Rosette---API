@@ -83,5 +83,28 @@ class Etudiants extends Model
     }
 
 
+    public function scopeMention($query, $mention){
+        if($mention == 0){
+            return $query;
+        }else{
+            return $query->whereHas('sousetudiants', function($q) use ($mention){
+                if ($mention === 'Aucune') {
+                     $q->where('noteTotal', '<', 10);
+                } elseif ($mention === 'passable') {
+                     $q->where('noteTotal', '<', 12);
+                } elseif ($mention === 'A-bien') {
+                      $q->where('noteTotal', '<', 14);
+                } elseif ($mention === 'Bien') {
+                      $q->where('noteTotal', '<', 17);
+                } elseif ($mention === 'Très-bien') {
+                      $q->where('noteTotal', '<', 19);
+                } elseif ($mention === 'Honorable') {
+                     $q->where('noteTotal', '>', 18);
+                }
+            });
+        }
+
+    }
+
 
 }

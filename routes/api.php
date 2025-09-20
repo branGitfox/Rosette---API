@@ -43,6 +43,7 @@ Route::get('admission-list', [AdmissionsController::class, 'list']);
 Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete']);
 //SOUSETUDIANTS
 Route::put('etudiant-note/{id}', [SousetudiantsController::class, 'update_note']);
+Route::post('etudiant-recreation', [EtudiantsController::class, 'reinscriptions']);
 
 //ROUTE POUR ETUDIANTs
 Route::post('etudiant-creation', [EtudiantsController::class, 'inscription']);

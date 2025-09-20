@@ -14,6 +14,7 @@ class Sousetudiants extends Model
         'note1',
         'note2',
         'note3',
+        'transfert',
         'noteTotal',
         'status_admissions',
     ];
@@ -32,6 +33,7 @@ class Sousetudiants extends Model
     public function ecolage() {
         return $this->hasMany(Moisecolage::class, 'et_id', 'id');
     }
+
 
 
 }

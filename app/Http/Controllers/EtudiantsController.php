@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Acs;
+use App\Models\Classes;
 use App\Models\Etudiants;
 
+use App\Models\Salles;
 use App\Models\Sousetudiants;
 use http\Env\Response;
 use Illuminate\Http\Request;
@@ -83,6 +85,7 @@ class EtudiantsController extends Controller
         ]);
 
         $et_id = DB::table('etudiants')->latest()->first()->id;
+        $enfant_prof = DB::table('etudiants')->latest()->first()->enfantProf;
 
 
         $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
@@ -93,7 +96,7 @@ class EtudiantsController extends Controller
             $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
 
         $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
-        $ecolage->increment($ac_id, $montant_ecolage);
+        $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
         $droit->increment($ac_id, $montant_droit);
         $kermesse->increment($ac_id, $montant_kermesse);
         $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
@@ -141,12 +144,12 @@ class EtudiantsController extends Controller
     public function list_note(){
         $lignes = request()->query('lines');
         $sexe = request()->query('sexe');
-        $year = request()->query('annee');
+        $year =request()->query('annee') == 0?DB::table('acs')->latest()->first()->id:request()->query('annee');
         $classe = request()->query('classe');
         $salle = request()->query('salle');
         $q = request()->query('q');
-        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->with(['sousetudiants'  => fn($q) => $q->where('ac_id', 1),
-            'sousetudiants.classe' , 'sousetudiants.salle', 'sousetudiants.annee', 'sousetudiants.ecolage' ]   )->orderBy('created_at', 'desc')->paginate($lignes));
+        $mention = request()->query('mention');
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
     //RECUPERATION D'UN ETUDIANT
@@ -234,6 +237,41 @@ public function deletes($id){
         return response()->json(['message' => 'Etudiant supprime']);
 }
 
+//REINSCRIPTION ETUDIANT
+public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
 
+         $etudiant = Etudiants::findOrFail($request->etid);
+        $sousetudiant = Sousetudiants::findOrFail($request->setid);
+         $salle = Salles::where('id', $request->sa_id)->with('classes')->first();
+        $sa_id = $salle->id;
+        $cl_id = $salle->classes->id;
+        $ac_id = $salle->classes->ac_id;
+        $et_id = $etudiant->id;
+
+        $sousetudiants_instance->create($sa_id, $ac_id, $cl_id, $et_id, NULL, NULL, NULL);
+        $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
+        $ecolage_devide = $montant_ecolage / ($etudiant->enfantProf == 1?2:1);
+        $montant_droit = DB::table('classes')->latest()->first()->droit;
+        $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
+        $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
+        $ecolage->increment($ac_id, $ecolage_devide);
+        $droit->increment($ac_id, $montant_droit);
+        $kermesse->increment($ac_id, $montant_kermesse);
+        $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
+
+    foreach($mois_list->mois as $index => $m){
+        if($index === 0){
+            $payé = true;
+        }else{
+            $payé = false;
+        }
+
+        $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+    }
+
+    $sousetudiant->update(['transfert' => true]);
+
+    return response()->json(['message' => 'Etudiant transferé']);
+}
 
 }
