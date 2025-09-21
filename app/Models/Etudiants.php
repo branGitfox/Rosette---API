@@ -82,6 +82,41 @@ class Etudiants extends Model
         }
     }
 
+    public function scopeEcolage($query, $status){
+        if($status == 0){
+            return $query;
+        }else{
+
+            return $query->whereHas('sousetudiants', function($q) use ($status){
+                if ($status == 'Complet') {
+
+                    $q->whereDoesntHave('ecolage', function ($u) {
+                        $u->where('payé', 0)->where('ac_id', 1);
+                    });
+                } else {
+
+                    $q->whereHas('ecolage', function ($u) {
+                        $u->where('payé', 0);
+                    });
+                }
+
+            });
+        }
+    }
+
+    public function scopeMoisecolage($query, $mois, $status){
+        if($mois == 0){
+            return $query;
+        }else{
+
+            return $query->whereHas('sousetudiants', function($q) use ($mois, $status){
+                    $q->whereHas('ecolage', function ($u) use ($mois, $status) {
+                        $u->where('mois', $mois)->where('payé', $status==0|| $status =='Complet'?1:0);
+                    });
+            });
+        }
+    }
+
 
     public function scopeMention($query, $mention){
         if($mention == 0){

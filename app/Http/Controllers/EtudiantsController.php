@@ -238,7 +238,7 @@ public function deletes($id){
 }
 
 //REINSCRIPTION ETUDIANT
-public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
+ public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
 
          $etudiant = Etudiants::findOrFail($request->etid);
         $sousetudiant = Sousetudiants::findOrFail($request->setid);
@@ -273,5 +273,30 @@ public function reinscriptions(Request $request, SousetudiantsController $souset
 
     return response()->json(['message' => 'Etudiant transferé']);
 }
+
+//SUSPENDRE UN ELEVE
+
+public function suspendre($id){
+      Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => 'suspendu', 'transfert' => true]);
+      return response()->json(['message' => 'Etudiant suspendu']);
+}
+
+
+
+    //RECUPERATION DE LA LISTE D'ETUDIANT PAGE GESTION ECOLAGE
+
+    public function list_ecolage(){
+
+        $lignes = request()->query('lines');
+        $sexe = request()->query('sexe');
+        $year =request()->query('annee') == 0?DB::table('acs')->latest()->first()->id:request()->query('annee');
+        $classe = request()->query('classe');
+        $salle = request()->query('salle');
+        $q = request()->query('q');
+        $mention = request()->query('mention');
+        $ecolage = request()->query('ecolage');
+        $mois = request()->query('mois');
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->moisecolage($mois, $ecolage)->yearNote($year)->ecolage($ecolage)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
+    }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Acs;
 use App\Models\Classes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClassesController extends Controller
 {
@@ -51,7 +52,18 @@ class ClassesController extends Controller
         return response()->json(Classes::with('acs')->get());
     }
 
+    //RECUPERATION CLASSE PAR ANNEE
 
+    Public function list_year($id){
+        if($id == 0){
+            $ac_id = DB::table('acs')->latest()->first()->id;
+
+        }else{
+            $ac_id = $id;
+        }
+
+        return response()->json(Classes::where('ac_id', $ac_id)->orderBy('created_at', 'desc')->get());
+    }
     public function delete($id){
         Classes::findOrFail($id)->delete();
 
