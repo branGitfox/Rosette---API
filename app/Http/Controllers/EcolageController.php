@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ecolages;
 use App\Models\Etudiants;
+use App\Models\Moisecolage;
 use Illuminate\Http\Request;
 
 class EcolageController extends Controller
@@ -23,5 +24,14 @@ class EcolageController extends Controller
                 'solde' => $ecolage
             ]);
         }
+    }
+
+    public function pay($id,Request $request){
+        $montant = $request?->cost;
+        Moisecolage::findOrFail($id)->update([
+            'payé' => 1
+        ]);
+        $this->increment($request->ac_id,$request->prof==1?($montant/2):$montant);
+        return response()->json(['message' => 'ecolage payé']);
     }
 }

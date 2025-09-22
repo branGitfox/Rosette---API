@@ -3,8 +3,10 @@
 use App\Http\Controllers\AcController;
 use App\Http\Controllers\AdmissionsController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\EcolageController;
 use App\Http\Controllers\EtudiantsController;
 use App\Http\Controllers\MacController;
+use App\Http\Controllers\MoisecolageController;
 use App\Http\Controllers\SallesController;
 use App\Http\Controllers\SousetudiantsController;
 use App\Http\Controllers\UsersController;
@@ -62,5 +64,8 @@ Route::get('etudiant-list_ecolage', [EtudiantsController::class, 'list_ecolage']
 // ROUTE POUR MOIS ECOLAGE
 Route::get('mac-list_year/{id}', [MacController::class, 'list_year']);
 
+
+//ROUTE POUR ECOLAGE
+Route::put('ecolage-pay/{id}', [EcolageController::class, 'pay']);
 
 
