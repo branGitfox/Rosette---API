@@ -7,9 +7,11 @@ use App\Http\Controllers\EcolageController;
 use App\Http\Controllers\EtudiantsController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\MoisecolageController;
+use App\Http\Controllers\ProfessionsController;
 use App\Http\Controllers\SallesController;
 use App\Http\Controllers\SousetudiantsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\WorkersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -68,4 +70,14 @@ Route::get('mac-list_year/{id}', [MacController::class, 'list_year']);
 //ROUTE POUR ECOLAGE
 Route::put('ecolage-pay/{id}', [EcolageController::class, 'pay']);
 
+//ROUTE POUR EMPLOYEE
+Route::post('worker-creation', [WorkersController::class, 'create']);
+Route::post('worker-update/{id}', [WorkersController::class, 'update']);
+Route::get('worker-list', [WorkersController::class, 'list']);
+Route::get('worker/{id}', [WorkersController::class, 'worker']);
+Route::delete('worker/{id}', [WorkersController::class, 'delete']);
 
+
+//ROUTE POUR PROFESSION
+Route::post('profession-creation', [ProfessionsController::class, 'create']);
+Route::get('profession-list', [ProfessionsController::class, 'list']);

@@ -93,7 +93,7 @@ class EtudiantsController extends Controller
         $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
 
 
-            $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
+        $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
 
         $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
         $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
