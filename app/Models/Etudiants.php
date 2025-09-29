@@ -141,5 +141,10 @@ class Etudiants extends Model
 
     }
 
+    public function scopeIsGenre($query, $sexe){
+        return $query->where('sexe', $sexe);
+    }
+
+
 
 }

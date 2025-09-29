@@ -28,6 +28,9 @@ class Workers extends Model
         return $this->HasMany(Matieres::class, 'w_id', 'id');
     }
 
+    public function scopeIsProf($query){
+        return $query->where('p_id', 1);
+    }
 
 
 }

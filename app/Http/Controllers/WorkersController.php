@@ -126,5 +126,9 @@ class WorkersController extends Controller
         return response()->json(['message' => 'Employé supprimé']);
     }
 
-
+    public function count(){
+        $prof=Workers::isProf()->get()->count();
+        $all = Workers::all()->count();
+        return ['prof'=> ['title'=>'Enseignants', 'value' => $prof, 'icon' => 'FaChalkboardTeacher'], 'all' => ['title' => 'Employés', 'value' => $all, 'icon' => 'FaUsers']];
+    }
 }

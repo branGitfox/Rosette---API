@@ -299,4 +299,28 @@ public function suspendre($id){
         return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->moisecolage($mois, $ecolage)->yearNote($year)->ecolage($ecolage)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
+
+    //NOMBRE D'ETUDIANT
+    public function count(){
+
+        $count = Etudiants::all()->count();
+        return response()->json(['title' => 'Etudiants', 'value' => $count, 'icon' => 'FaUserGraduate']);
+    }
+
+    public function effectif(WorkersController $worker){
+        $boy = Etudiants::isGenre(0)->get()->count();
+        $girl = Etudiants::isGenre(1)->get()->count();
+
+        return response()->json([
+            'labels' => ['Filles', 'Garçons', 'Enseignants', 'Employés'],
+            'datasets' => [
+                [
+                'label' => 'Répartition',
+                'data' => [$girl, $boy, $worker->count()['prof']['value'], $worker->count()['all']['value']
+                ],
+                'backgroundColor' => ['#895256', '#9f7126', '#3b82f6', '#10b981'],
+                'borderColor'=>'#fff',
+                    'borderWidth' => 2]
+            ]]);
+    }
 }

@@ -26,6 +26,7 @@ class EcolageController extends Controller
         }
     }
 
+    //PAIEMENT ECOLAGE
     public function pay($id,Request $request){
         $montant = $request?->cost;
         Moisecolage::findOrFail($id)->update([
@@ -34,4 +35,18 @@ class EcolageController extends Controller
         $this->increment($request->ac_id,$request->prof==1?($montant/2):$montant);
         return response()->json(['message' => 'ecolage payé']);
     }
+
+
+    //SOMME TOTAL DE TOUS LES ECOLAGES EXISTANTS
+    public function total(){
+        $ecolages = Ecolages::all();
+        $total = 0;
+
+        foreach ($ecolages as $ecolage) {
+            $total+=$ecolage->solde;
+        }
+
+        return response()->json(['title' => "Solde d'écolage", 'value' => $total, 'icon' => 'FaMoneyBillWave']);
+    }
+
 }

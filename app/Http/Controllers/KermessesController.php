@@ -23,4 +23,17 @@ class KermessesController extends Controller
             ]);
         }
     }
+
+
+    //SOMME TOTAL DE TOUS LES KERMESSES EXISTANTS
+    public function total(){
+        $kermesses = Kermesses::all();
+        $total = 0;
+
+        foreach ($kermesses as $kermesse) {
+            $total+=$kermesse->solde;
+        }
+
+        return response()->json(['title' => 'Solde de kermesse', 'value' => $total, 'icon' => 'FaCoins']);
+    }
 }

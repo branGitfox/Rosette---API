@@ -23,4 +23,16 @@ class DroitsController extends Controller
             ]);
         }
     }
+
+    //SOMME TOTAL DE TOUS LES DROITS EXISTANTS
+    public function total(){
+        $droits = Droits::all();
+        $total = 0;
+
+        foreach ($droits as $droit) {
+            $total+=$droit->solde;
+        }
+
+        return response()->json(['title' => 'Solde de droits', 'value' => $total, 'icon' => 'FaWallet']);
+    }
 }
