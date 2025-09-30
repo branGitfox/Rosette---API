@@ -11,7 +11,7 @@ class Backup extends Controller
 
     public function backupDatabase()
     {
-        // 1️⃣ Récupérer toutes les tables
+
         $tables = DB::select('SHOW TABLES');
         $dbName = env('DB_DATABASE');
         $tables = array_map(fn($table) => array_values((array)$table)[0], $tables);
@@ -19,17 +19,17 @@ class Backup extends Controller
         $backupSql = '';
 
         foreach ($tables as $table) {
-            // 2️⃣ Supprimer la table si elle existe
+
             $backupSql .= "DROP TABLE IF EXISTS `$table`;\n";
 
-            // 3️⃣ Structure de la table
+
             $createTable = DB::select("SHOW CREATE TABLE `$table`")[0];
             $createStmt = $createTable->{'Create Table'} ?? $createTable->Create_Table ?? null;
             if ($createStmt) {
                 $backupSql .= $createStmt . ";\n\n";
             }
 
-            // 4️⃣ Données de la table
+
             $rows = DB::table($table)->get();
             if ($rows->count() > 0) {
                 foreach ($rows as $row) {
@@ -45,7 +45,7 @@ class Backup extends Controller
             $backupSql .= "\n\n\n";
         }
 
-        // 5️⃣ Sauvegarde du fichier
+
         $fileName = date('Y-m-d') . '.sql';
         $path = database_path("backups/$fileName");
 
