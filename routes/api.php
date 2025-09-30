@@ -9,9 +9,11 @@ use App\Http\Controllers\DepensesMoisController;
 use App\Http\Controllers\DroitsController;
 use App\Http\Controllers\EcolageController;
 use App\Http\Controllers\EtudiantsController;
+use App\Http\Controllers\IdentifysController;
 use App\Http\Controllers\KermessesController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\MoisecolageController;
+use App\Http\Controllers\NifsController;
 use App\Http\Controllers\ProfessionsController;
 use App\Http\Controllers\RevenusMoisController;
 use App\Http\Controllers\SallesController;
@@ -111,5 +113,13 @@ Route::post('depense', [DepensesMoisController::class, 'create']);
 //DASHBOARD
 Route::get('databar', [DashboardController::class, 'getBarData']);
 Route::get('flux', [DashboardController::class, 'getFlux']);
+
+//INFORMATINO CONCERNANT L'ECOLE
+Route::post('nif', [NifsController::class, 'create']);
+Route::get('nif', [NifsController::class, 'list']);
+Route::delete('nif/{id}', [NifsController::class, 'deletes']);
+Route::get('identify', [IdentifysController::class, 'list']);
+Route::delete('identify/{id}', [IdentifysController::class, 'deletes']);
+Route::post('identify', [IdentifysController::class, 'create']);
 
 
