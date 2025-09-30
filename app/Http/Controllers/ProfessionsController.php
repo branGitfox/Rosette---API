@@ -9,7 +9,7 @@ class ProfessionsController extends Controller
 {
     //CREATION DE PROFESSION
     public function create(Request $request){
-        $fields = request()->validate([
+        $fields = $request->validate([
             'profession' => 'required',
         ]);
 
@@ -21,6 +21,11 @@ class ProfessionsController extends Controller
     //RECUPERATION DE PROFESSION
     public function list(){
         return Professions::all();
+    }
+
+    public function deletes($id){
+        Professions::findOrFail($id)->delete();
+        return response()->json(['message' => 'Profession supprimé']);
     }
 
 }

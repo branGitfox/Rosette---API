@@ -53,7 +53,7 @@ class WorkersController extends Controller
             $moissalaires->initializeMoissalaires($ac_id, $w_id, $m->mois, 0);
         }
 
-        if($w->profs->profession == "Professeur"){
+        if($w->profs->id == 1){
             foreach (json_decode($request->matiere) as $mat){
                 $matieres->create($mat->matiere,$mat->salle,$w_id);
 
@@ -104,7 +104,7 @@ class WorkersController extends Controller
         $w = Workers::with('profs', 'matiere')->findOrFail($id);
         $w_id = $w->id;
 
-        if($w->profs->profession == "Professeur"){
+        if($w->profs->id == 1){
 
             foreach ($w->matiere as $m){
                 $matieres->delete($m->id);

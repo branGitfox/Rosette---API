@@ -6,6 +6,7 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepensesController;
 use App\Http\Controllers\DepensesMoisController;
+use App\Http\Controllers\DomainesController;
 use App\Http\Controllers\DroitsController;
 use App\Http\Controllers\EcolageController;
 use App\Http\Controllers\EtudiantsController;
@@ -96,6 +97,7 @@ Route::get('worker-count', [WorkersController::class, 'count']);
 //ROUTE POUR PROFESSION
 Route::post('profession-creation', [ProfessionsController::class, 'create']);
 Route::get('profession-list', [ProfessionsController::class, 'list']);
+Route::delete('profession/{id}', [ProfessionsController::class, 'deletes']);
 
 //ROUTE POUR VISUALISATION DATAPIE
 
@@ -114,7 +116,7 @@ Route::post('depense', [DepensesMoisController::class, 'create']);
 Route::get('databar', [DashboardController::class, 'getBarData']);
 Route::get('flux', [DashboardController::class, 'getFlux']);
 
-//INFORMATINO CONCERNANT L'ECOLE
+//INFORMATION CONCERNANT L'ECOLE
 Route::post('nif', [NifsController::class, 'create']);
 Route::get('nif', [NifsController::class, 'list']);
 Route::delete('nif/{id}', [NifsController::class, 'deletes']);
@@ -122,4 +124,10 @@ Route::get('identify', [IdentifysController::class, 'list']);
 Route::delete('identify/{id}', [IdentifysController::class, 'deletes']);
 Route::post('identify', [IdentifysController::class, 'create']);
 
+//MATIERE
 
+Route::post('domaines', [DomainesController::class, 'create']);
+Route::get('domaines', [DomainesController::class, 'list']);
+Route::delete('domaines/{id}', [DomainesController::class, 'deletes']);
+Route::get('export', [\App\Http\Controllers\Backup::class, 'backupDatabase']);
+Route::post('import', [\App\Http\Controllers\Backup::class, 'restoreDatabase']);

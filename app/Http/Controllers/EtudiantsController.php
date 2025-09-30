@@ -52,68 +52,72 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
-
-        if($request->file('photo') !== NULL){
-            $file =  $request->file('photo');
-            $image =  $file->store('uploads', 'public');
-            $image_treated = explode('/',$image)[1];
+        if(Sousetudiants::where('sa_id', $fields['sa_id'])->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
+            throw new \Error('La salle a atteint son effectif');
         }else{
-            $image_treated =  'default.png';
-        }
-
-        $ac_id = DB::table('acs')->latest()->first()->id;
-        Etudiants::create([
-            'nom' => $fields['nom'],
-            'prenom'=> $fields['prenom'],
-            'sexe' => $fields['sexe'],
-            'dateNaissance' => $fields['dateNaissance'],
-            'lieuNaissance' => $fields['lieuNaissance'],
-            'adresse' => $fields['adresse'],
-            'matricule' => $fields['matricule'],
-            'photo' => $image_treated,
-            'enfantProf' => $fields['enfantProf'],
-            'nomPere' => $fields['nomPere'],
-            'nomMere' => $fields['nomMere'],
-            'telephonePere' => $fields['telephonePere'],
-            'telephoneMere' => $fields['telephoneMere'],
-            'prenomMere' => $fields['prenomMere'],
-            'prenomPere' => $fields['prenomPere'],
-            'nomTuteur' => $fields['nomTuteur'],
-            'prenomTuteur' => $fields['prenomTuteur'],
-            'telephoneTuteur' => $fields['telephoneTuteur'],
-            'ac_id' =>$ac_id
-        ]);
-
-        $et_id = DB::table('etudiants')->latest()->first()->id;
-        $enfant_prof = DB::table('etudiants')->latest()->first()->enfantProf;
-
-
-        $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
-        $montant_droit = DB::table('classes')->latest()->first()->droit;
-        $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
-
-
-        $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
-
-        $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
-        $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
-        $droit->increment($ac_id, $montant_droit);
-        $kermesse->increment($ac_id, $montant_kermesse);
-        $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
-
-        foreach($mois_list->mois as $index => $m){
-            if($index === 0){
-                $payé = true;
+            if($request->file('photo') !== NULL){
+                $file =  $request->file('photo');
+                $image =  $file->store('uploads', 'public');
+                $image_treated = explode('/',$image)[1];
             }else{
-                $payé = false;
+                $image_treated =  'default.png';
             }
 
-            $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+            $ac_id = DB::table('acs')->latest()->first()->id;
+            Etudiants::create([
+                'nom' => $fields['nom'],
+                'prenom'=> $fields['prenom'],
+                'sexe' => $fields['sexe'],
+                'dateNaissance' => $fields['dateNaissance'],
+                'lieuNaissance' => $fields['lieuNaissance'],
+                'adresse' => $fields['adresse'],
+                'matricule' => $fields['matricule'],
+                'photo' => $image_treated,
+                'enfantProf' => $fields['enfantProf'],
+                'nomPere' => $fields['nomPere'],
+                'nomMere' => $fields['nomMere'],
+                'telephonePere' => $fields['telephonePere'],
+                'telephoneMere' => $fields['telephoneMere'],
+                'prenomMere' => $fields['prenomMere'],
+                'prenomPere' => $fields['prenomPere'],
+                'nomTuteur' => $fields['nomTuteur'],
+                'prenomTuteur' => $fields['prenomTuteur'],
+                'telephoneTuteur' => $fields['telephoneTuteur'],
+                'ac_id' =>$ac_id
+            ]);
+
+            $et_id = DB::table('etudiants')->latest()->first()->id;
+            $enfant_prof = DB::table('etudiants')->latest()->first()->enfantProf;
+
+
+            $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
+            $montant_droit = DB::table('classes')->latest()->first()->droit;
+            $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
+
+
+            $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
+
+            $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
+            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
+            $droit->increment($ac_id, $montant_droit);
+            $kermesse->increment($ac_id, $montant_kermesse);
+            $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
+
+            foreach($mois_list->mois as $index => $m){
+                if($index === 0){
+                    $payé = true;
+                }else{
+                    $payé = false;
+                }
+
+                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+            }
+
+
+
+            return response()->json(['message' => 'Etudiant inscrit']);
         }
 
-
-
-        return response()->json(['message' => 'Etudiant inscrit']);
 
 
 
@@ -194,39 +198,44 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
-        $etudiant = Etudiants::findOrFail($id);
-        if($request->file('photo') !== NULL){
-            $file =  $request->file('photo');
-            $image =  $file->store('uploads', 'public');
-            $image_treated = explode('/',$image)[1];
+        if(Sousetudiants::where('sa_id', $fields['sa_id'])->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
+            throw new \Error('La salle a atteint son effectif');
+        }else {
+            $etudiant = Etudiants::findOrFail($id);
+            if ($request->file('photo') !== NULL) {
+                $file = $request->file('photo');
+                $image = $file->store('uploads', 'public');
+                $image_treated = explode('/', $image)[1];
 
-        }else{
-            $image_treated = $etudiant->photo;
+            } else {
+                $image_treated = $etudiant->photo;
+
+            }
+            $etudiant->update([
+                'nom' => $fields['nom'],
+                'prenom' => $fields['prenom'],
+                'sexe' => $fields['sexe'],
+                'dateNaissance' => $fields['dateNaissance'],
+                'lieuNaissance' => $fields['lieuNaissance'],
+                'adresse' => $fields['adresse'],
+                'matricule' => $fields['matricule'],
+                'photo' => $image_treated,
+                'enfantProf' => $fields['enfantProf'],
+                'nomPere' => $fields['nomPere'],
+                'nomMere' => $fields['nomMere'],
+                'telephonePere' => $fields['telephonePere'],
+                'telephoneMere' => $fields['telephoneMere'],
+                'prenomMere' => $fields['prenomMere'],
+                'prenomPere' => $fields['prenomPere'],
+                'nomTuteur' => $fields['nomTuteur'],
+                'prenomTuteur' => $fields['prenomTuteur'],
+                'telephoneTuteur' => $fields['telephoneTuteur'],
+            ]);
+            $sous_et = Sousetudiants::where('et_id', $request->id)->latest()->first()->id;
+            $sousetudiants->update($sous_et, ['cl_id' => $request->cl_id, 'sa_id' => $request->sa_id]);
+            return response()->json(['message' => 'Etudiant modifie']);
 
         }
-        $etudiant->update([
-            'nom' => $fields['nom'],
-            'prenom'=> $fields['prenom'],
-            'sexe' => $fields['sexe'],
-            'dateNaissance' => $fields['dateNaissance'],
-            'lieuNaissance' => $fields['lieuNaissance'],
-            'adresse' => $fields['adresse'],
-            'matricule' => $fields['matricule'],
-            'photo' => $image_treated,
-            'enfantProf' => $fields['enfantProf'],
-            'nomPere' => $fields['nomPere'],
-            'nomMere' => $fields['nomMere'],
-            'telephonePere' => $fields['telephonePere'],
-            'telephoneMere' => $fields['telephoneMere'],
-            'prenomMere' => $fields['prenomMere'],
-            'prenomPere' => $fields['prenomPere'],
-            'nomTuteur' => $fields['nomTuteur'],
-            'prenomTuteur' => $fields['prenomTuteur'],
-            'telephoneTuteur' => $fields['telephoneTuteur'],
-        ]);
-        $sous_et = Sousetudiants::where('et_id', $request->id)->latest()->first()->id;
-        $sousetudiants->update($sous_et,['cl_id' => $request->cl_id, 'sa_id' => $request->sa_id]);
-        return response()->json(['message' => 'Etudiant modifie']);
     }
 
 
@@ -239,39 +248,42 @@ public function deletes($id){
 
 //REINSCRIPTION ETUDIANT
  public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
-
+     if(Sousetudiants::where('sa_id', $request->sa_id)->count() == Salles::where('id', $request->sa_id)->first()->effectif){
+         throw new \Error('La salle a atteint son effectif');
+     }else {
          $etudiant = Etudiants::findOrFail($request->etid);
-        $sousetudiant = Sousetudiants::findOrFail($request->setid);
+         $sousetudiant = Sousetudiants::findOrFail($request->setid);
          $salle = Salles::where('id', $request->sa_id)->with('classes')->first();
-        $sa_id = $salle->id;
-        $cl_id = $salle->classes->id;
-        $ac_id = $salle->classes->ac_id;
-        $et_id = $etudiant->id;
+         $sa_id = $salle->id;
+         $cl_id = $salle->classes->id;
+         $ac_id = $salle->classes->ac_id;
+         $et_id = $etudiant->id;
 
-        $sousetudiants_instance->create($sa_id, $ac_id, $cl_id, $et_id, NULL, NULL, NULL);
-        $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
-        $ecolage_devide = $montant_ecolage / ($etudiant->enfantProf == 1?2:1);
-        $montant_droit = DB::table('classes')->latest()->first()->droit;
-        $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
-        $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
-        $ecolage->increment($ac_id, $ecolage_devide);
-        $droit->increment($ac_id, $montant_droit);
-        $kermesse->increment($ac_id, $montant_kermesse);
-        $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
+         $sousetudiants_instance->create($sa_id, $ac_id, $cl_id, $et_id, NULL, NULL, NULL);
+         $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
+         $ecolage_devide = $montant_ecolage / ($etudiant->enfantProf == 1 ? 2 : 1);
+         $montant_droit = DB::table('classes')->latest()->first()->droit;
+         $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
+         $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
+         $ecolage->increment($ac_id, $ecolage_devide);
+         $droit->increment($ac_id, $montant_droit);
+         $kermesse->increment($ac_id, $montant_kermesse);
+         $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
-    foreach($mois_list->mois as $index => $m){
-        if($index === 0){
-            $payé = true;
-        }else{
-            $payé = false;
-        }
+         foreach ($mois_list->mois as $index => $m) {
+             if ($index === 0) {
+                 $payé = true;
+             } else {
+                 $payé = false;
+             }
 
-        $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
-    }
+             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+         }
 
-    $sousetudiant->update(['transfert' => true]);
+         $sousetudiant->update(['transfert' => true]);
 
-    return response()->json(['message' => 'Etudiant transferé']);
+         return response()->json(['message' => 'Etudiant transferé']);
+     }
 }
 
 //SUSPENDRE UN ELEVE
