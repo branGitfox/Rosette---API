@@ -92,6 +92,7 @@ Route::get('worker-list', [WorkersController::class, 'list']);
 Route::get('worker/{id}', [WorkersController::class, 'worker']);
 Route::delete('worker/{id}', [WorkersController::class, 'delete']);
 Route::get('worker-count', [WorkersController::class, 'count']);
+Route::post('worker-pay', [\App\Http\Controllers\MoissalairesController::class, 'pay']);
 
 
 //ROUTE POUR PROFESSION
@@ -131,3 +132,9 @@ Route::get('domaines', [DomainesController::class, 'list']);
 Route::delete('domaines/{id}', [DomainesController::class, 'deletes']);
 Route::get('export', [\App\Http\Controllers\Backup::class, 'backupDatabase']);
 Route::post('import', [\App\Http\Controllers\Backup::class, 'restoreDatabase']);
+
+//MOISDALAIRES
+Route::get('moissalaires/{id}', [\App\Http\Controllers\MoissalairesController::class, 'moissalaires']);
+
+//ARCHIVE SALAIRES
+Route::get('archives/{id}', [\App\Http\Controllers\MoissalairesController::class, 'archives']);

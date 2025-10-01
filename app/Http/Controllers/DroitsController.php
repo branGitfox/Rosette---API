@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acs;
 use App\Models\Droits;
 use Illuminate\Http\Request;
 
@@ -26,13 +27,9 @@ class DroitsController extends Controller
 
     //SOMME TOTAL DE TOUS LES DROITS EXISTANTS
     public function total(){
-        $droits = Droits::all();
-        $total = 0;
+        $ac_id = Acs::latest()->first()->id;
+        $droits = Droits::where('ac_id', $ac_id)->first()->solde;
 
-        foreach ($droits as $droit) {
-            $total+=$droit->solde;
-        }
-
-        return response()->json(['title' => 'Solde de droits', 'value' => $total, 'icon' => 'FaWallet']);
+        return response()->json(['title' => 'Solde de droits', 'value' => $droits, 'icon' => 'FaWallet']);
     }
 }

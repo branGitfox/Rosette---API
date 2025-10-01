@@ -167,8 +167,9 @@ class DashboardController extends Controller
     public function getFlux() {
         $last_debit = Revenusparmois::latest()->first();
         $last_credit = Depensesparmois::latest()->first();
+
         return response()->json([
-            'debit' => $last_debit->solde,
+            'debit' => $last_debit->solde??0,
             'credit' => $last_credit->solde,
         ]);
 

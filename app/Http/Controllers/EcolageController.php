@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acs;
 use App\Models\Ecolages;
 use App\Models\Etudiants;
 use App\Models\Moisecolage;
@@ -26,6 +27,15 @@ class EcolageController extends Controller
         }
     }
 
+    public function decrement($ac_id, $ecolage){
+        if(Ecolages::where('ac_id', $ac_id)->exists()){
+            $last_solde = Ecolages::where('ac_id', $ac_id)->first()->solde;
+            Ecolages::where('ac_id', $ac_id)->update([
+                'solde' => $last_solde - $ecolage
+            ]);
+        }
+    }
+
     //PAIEMENT ECOLAGE
     public function pay($id,Request $request){
         $montant = $request?->cost;
@@ -39,14 +49,12 @@ class EcolageController extends Controller
 
     //SOMME TOTAL DE TOUS LES ECOLAGES EXISTANTS
     public function total(){
-        $ecolages = Ecolages::all();
-        $total = 0;
+        $ac_id = Acs::latest()->first()->id;
+        $ecolages = Ecolages::where('ac_id', $ac_id)->first()->solde;
 
-        foreach ($ecolages as $ecolage) {
-            $total+=$ecolage->solde;
-        }
 
-        return response()->json(['title' => "Solde d'écolage", 'value' => $total, 'icon' => 'FaMoneyBillWave']);
+
+        return response()->json(['title' => "Solde d'écolage", 'value' => $ecolages, 'icon' => 'FaMoneyBillWave']);
     }
 
 }

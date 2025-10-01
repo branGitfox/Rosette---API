@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Acs;
 use App\Models\Kermesses;
 use Illuminate\Http\Request;
 
@@ -27,13 +28,10 @@ class KermessesController extends Controller
 
     //SOMME TOTAL DE TOUS LES KERMESSES EXISTANTS
     public function total(){
-        $kermesses = Kermesses::all();
-        $total = 0;
+        $ac_id = Acs::latest()->first()->id;
+        $kermesses = Kermesses::where('ac_id', $ac_id)->first()->solde;
 
-        foreach ($kermesses as $kermesse) {
-            $total+=$kermesse->solde;
-        }
 
-        return response()->json(['title' => 'Solde de kermesse', 'value' => $total, 'icon' => 'FaCoins']);
+        return response()->json(['title' => 'Solde de kermesse', 'value' => $kermesses, 'icon' => 'FaCoins']);
     }
 }
