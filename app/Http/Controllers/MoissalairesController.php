@@ -6,6 +6,7 @@ use App\Models\Acs;
 use App\Models\Archsals;
 use App\Models\Ecolages;
 use App\Models\Moissalaires;
+use App\Models\Workers;
 use http\Env\Response;
 use Illuminate\Http\Request;
 
@@ -38,19 +39,25 @@ class MoissalairesController extends Controller
 
         $ac_id = Acs::latest()->first()->id;
         if(Ecolages::where('ac_id', $ac_id)->first()->solde >= $fields['montant'] * count($fields['mois'])){
-            if($fields['type'] == 1){
-                foreach ($fields['mois'] as $mois){
-                    Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->update([
-                        'payé' => true,
-                        'reste' => 0
-                    ]);
-                    $ecolages->decrement($ac_id, $fields['montant']);
 
+            if($fields['type'] == 1){
+                if($fields['montant'] == Workers::where('id', $fields['w_id'])->first()->salaire_base){
+                    foreach ($fields['mois'] as $mois){
+                        Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->update([
+                            'payé' => true,
+                            'reste' => 0
+                        ]);
+                        $ecolages->decrement($ac_id, $fields['montant']);
+
+                    }
+
+                    $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']);
+                    $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
+                    return response()->json(['message' => 'Paiment salaire effectué']);
+                }else{
+                    throw new Error('La somme doit etre identique au salaire base');
                 }
 
-                $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']);
-                $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
-                return response()->json(['message' => 'Paiment salaire effectué']);
             }else{
 
                 foreach ($fields['mois'] as $mois){
@@ -87,7 +94,7 @@ class MoissalairesController extends Controller
     }
 
     public function archives($id){
-        $ac_id = Acs::latest()->first()->id;
-        return \response()->json(Archsals::where('w_id', $id)->where('ac_id',$ac_id )->get());
+        $ac_id =request()->query('year')!='null'?request()->query('year'):Acs::latest()->first()->id;
+        return \response()->json(Archsals::query()->where('w_id', $id)->where('ac_id',$ac_id )->orderByDesc('created_at')->get());
     }
 }

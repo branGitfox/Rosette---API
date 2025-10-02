@@ -93,6 +93,7 @@ Route::get('worker/{id}', [WorkersController::class, 'worker']);
 Route::delete('worker/{id}', [WorkersController::class, 'delete']);
 Route::get('worker-count', [WorkersController::class, 'count']);
 Route::post('worker-pay', [\App\Http\Controllers\MoissalairesController::class, 'pay']);
+Route::put('worker-status/{id}', [WorkersController::class, 'status']);
 
 
 //ROUTE POUR PROFESSION
@@ -138,3 +139,10 @@ Route::get('moissalaires/{id}', [\App\Http\Controllers\MoissalairesController::c
 
 //ARCHIVE SALAIRES
 Route::get('archives/{id}', [\App\Http\Controllers\MoissalairesController::class, 'archives']);
+
+//ROUTE POUR CONGE
+Route::post('conge', [\App\Http\Controllers\ArchcongesController::class, 'create']);
+
+//ARCHIVE CONGE
+Route::get('conge/{id}', [\App\Http\Controllers\ArchcongesController::class, 'archives']);
+Route::delete('conge/{id}', [\App\Http\Controllers\ArchcongesController::class, 'deletes']);

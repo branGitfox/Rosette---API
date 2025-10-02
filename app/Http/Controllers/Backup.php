@@ -118,7 +118,7 @@ class Backup extends Controller
 
         return [
             'type' => 'success',
-            'message' => 'Importation réussie 🎉'
+            'message' => 'Importation réussie '
         ];
     }
 

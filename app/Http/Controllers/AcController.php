@@ -49,7 +49,7 @@ class AcController extends Controller
     //RECUPERATION LA LISTE D"ANNEE SCOLAIRE
 
     public function listAnnee() {
-        return response()->json(Acs::all());
+        return response()->json(Acs::query()->orderByDesc('created_at')->get());
     }
 
 }

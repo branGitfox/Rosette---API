@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Acs;
+use App\Models\Archconges;
 use App\Models\Workers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -130,5 +131,11 @@ class WorkersController extends Controller
         $prof=Workers::isProf()->get()->count();
         $all = Workers::all()->count();
         return ['prof'=> ['title'=>'Enseignants', 'value' => $prof, 'icon' => 'FaChalkboardTeacher'], 'all' => ['title' => 'Employés', 'value' => $all, 'icon' => 'FaUsers']];
+    }
+
+    public function status($id, Request $request){
+        Workers::where('id', $id)->update(['status' => $request->status]);
+        Archconges::where('w_id', $id)->latest()->first()->update(['status' => 0]);
+        return response()->json(['message' => 'Status modifié']);
     }
 }

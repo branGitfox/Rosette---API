@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('archconges', function (Blueprint $table) {
+            $table->id();
+            $table->string('debut');
+            $table->string('fin');
+            $table->boolean('status')->default(true);
+            $table->unsignedBigInteger('ac_id');
+            $table->unsignedBigInteger('w_id');
+            $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
+            $table->foreign('w_id')->references('id')->on('workers')->cascadeOnDelete();
+            $table->text('motif')->default('Droit de congé');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        //
+    }
+};
