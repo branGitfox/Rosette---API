@@ -43,19 +43,25 @@ class MoissalairesController extends Controller
         if(Ecolages::where('ac_id', $ac_id)->first()->solde >= $fields['montant'] * count($fields['mois'])){
 
             if($fields['type'] == 1){
-                if($fields['montant'] == Workers::where('id', $fields['w_id'])->first()->salaire_base){
-                    foreach ($fields['mois'] as $mois){
-                        Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->update([
-                            'payé' => true,
-                            'reste' => 0
-                        ]);
-                        $ecolages->decrement($ac_id, $fields['montant']);
+                if($fields['montant'] == Workers::where('id', $fields['w_id'])->first()->salaire_base ){
 
-                    }
+                        foreach ($fields['mois'] as $mois){
+                            if( $fields['montant'] == Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->where('ac_id', $ac_id)->first()->reste){
+                                Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->where('ac_id', $ac_id)->update([
+                                    'payé' => true,
+                                    'reste' => 0
+                                ]);
+                                $ecolages->decrement($ac_id, $fields['montant']);
+                            }else{
+                                throw new Error('Le salaire n\'est plus complet ('.Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->where('ac_id', $ac_id)->first()->reste.')');
+                         }
+                        }
 
-                    $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']??' ');
-                    $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
-                    return response()->json(['message' => 'Paiment salaire effectué']);
+                        $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']??' ');
+                        $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
+                        return response()->json(['message' => 'Paiment salaire effectué']);
+
+
                 }else{
                     throw new Error('La somme doit etre identique au salaire base');
                 }
@@ -63,7 +69,7 @@ class MoissalairesController extends Controller
             }else{
 
                 foreach ($fields['mois'] as $mois){
-                    $check = Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->first();
+                    $check = Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->where('ac_id', $ac_id)->first();
                     if($fields['montant'] > $check->reste){
                         throw new Error("Il reste {$check->reste} d'avance pour le mois de $mois");
                     }else{
