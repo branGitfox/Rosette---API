@@ -32,6 +32,6 @@ class KermessesController extends Controller
         $kermesses = Kermesses::where('ac_id', $ac_id)->first()->solde;
 
 
-        return response()->json(['title' => 'Solde de kermesse', 'value' => $kermesses, 'icon' => 'FaCoins']);
+        return response()->json(['title' => 'Solde de kermesses', 'value' => $kermesses, 'icon' => 'FaCoins']);
     }
 }

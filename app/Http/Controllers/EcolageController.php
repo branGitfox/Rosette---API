@@ -55,7 +55,7 @@ class EcolageController extends Controller
 
 
 
-        return response()->json(['title' => "Solde d'écolage", 'value' => $ecolages, 'icon' => 'FaMoneyBillWave']);
+        return response()->json(['title' => "Solde d'écolages", 'value' => $ecolages, 'icon' => 'FaMoneyBillWave']);
     }
 
 }
