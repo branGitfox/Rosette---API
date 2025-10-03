@@ -11,5 +11,6 @@ class Moissalaires extends Model
       'ac_id',
       'payé',
         'w_id',
+        'reste'
     ];
 }

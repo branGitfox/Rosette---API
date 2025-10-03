@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\AcModel;
 use App\Models\Acs;
 use App\Models\Mac;
+use App\Models\Workers;
 use Illuminate\Http\Request;
 
 class AcController extends Controller
 {
     //CREATION D'UNE ANNEE SCOLAIRE
 
-    public function create(Request $request, MacController $mac) {
+    public function create(Request $request, MacController $mac, MoissalairesController $moissalaires) {
         $fields = $request->validate([
             'annee' => 'required|unique:acs',
-            'mois' => 'required'
+            'mois' => 'required',
+            'debut' => 'required',
         ], [
             'annee.required' => 'Annee obligatoire',
             'annee.unique' => 'Annee existe deja',
@@ -28,6 +30,17 @@ class AcController extends Controller
         }
 
         Acs::create($fields);
+        $ac_id = Acs::latest()->first()->id;
+        $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
+        if(Workers::all()->count() > 0){
+            foreach(Workers::all() as $w){
+                foreach ($mois_list?->mois as $m) {
+                    $moissalaires->initializeMoissalaires($ac_id, $w?->id, $m->mois, 0, $w?->salaire_base);
+                }
+            }
+        }
+
+
         return response()->json(['message' => 'Annee scolaire cree']);
     }
 

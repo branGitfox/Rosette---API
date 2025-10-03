@@ -17,7 +17,7 @@ class EtudiantsController extends Controller
 {
     //INSCRIPTION D'UN ETUDIANT
 
-    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
+    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
         $fields = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
@@ -64,6 +64,7 @@ class EtudiantsController extends Controller
             }
 
             $ac_id = DB::table('acs')->latest()->first()->id;
+            $debut_mois = DB::table('acs')->latest()->first()->debut;
             Etudiants::create([
                 'nom' => $fields['nom'],
                 'prenom'=> $fields['prenom'],
@@ -103,9 +104,10 @@ class EtudiantsController extends Controller
             $kermesse->increment($ac_id, $montant_kermesse);
             $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
-            foreach($mois_list->mois as $index => $m){
-                if($index === 0){
+            foreach($mois_list->mois as  $m){
+                if($debut_mois === $m->mois){
                     $payé = true;
+                    $revenusmois->increment($ac_id,$m->mois, ($montant_ecolage / ($enfant_prof==1?2:1))+$montant_droit+$montant_kermesse);
                 }else{
                     $payé = false;
                 }
@@ -198,7 +200,8 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
-        if(Sousetudiants::where('sa_id', $fields['sa_id'])->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
+
+        if(Sousetudiants::where('sa_id', $fields['sa_id'])->where('et_id', '!=', $request->id)->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
             throw new \Error('La salle a atteint son effectif');
         }else {
             $etudiant = Etudiants::findOrFail($id);
@@ -247,7 +250,7 @@ public function deletes($id){
 }
 
 //REINSCRIPTION ETUDIANT
- public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage){
+ public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
      if(Sousetudiants::where('sa_id', $request->sa_id)->count() == Salles::where('id', $request->sa_id)->first()->effectif){
          throw new \Error('La salle a atteint son effectif');
      }else {
@@ -258,7 +261,7 @@ public function deletes($id){
          $cl_id = $salle->classes->id;
          $ac_id = $salle->classes->ac_id;
          $et_id = $etudiant->id;
-
+         $debut_mois = Acs::latest()->first()->debut;
          $sousetudiants_instance->create($sa_id, $ac_id, $cl_id, $et_id, NULL, NULL, NULL);
          $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
          $ecolage_devide = $montant_ecolage / ($etudiant->enfantProf == 1 ? 2 : 1);
@@ -268,10 +271,12 @@ public function deletes($id){
          $ecolage->increment($ac_id, $ecolage_devide);
          $droit->increment($ac_id, $montant_droit);
          $kermesse->increment($ac_id, $montant_kermesse);
+
          $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
-         foreach ($mois_list->mois as $index => $m) {
-             if ($index === 0) {
+         foreach ($mois_list->mois as $m) {
+             if ($debut_mois === $m->mois) {
+                 $revenusmois->increment($ac_id,$m->mois, $ecolage_devide+$montant_droit+$montant_kermesse);
                  $payé = true;
              } else {
                  $payé = false;

@@ -7,17 +7,19 @@ use App\Models\Archsals;
 use App\Models\Ecolages;
 use App\Models\Moissalaires;
 use App\Models\Workers;
+use Error;
 use http\Env\Response;
 use Illuminate\Http\Request;
 
 class MoissalairesController extends Controller
 {
-    public function initializeMoissalaires($ac_id, $w_id, $mois, $payé){
+    public function initializeMoissalaires($ac_id, $w_id, $mois, $payé, $salaire){
         Moissalaires::create([
             'ac_id' => $ac_id,
             'w_id' => $w_id,
             'mois' => $mois,
-            'payé' => $payé
+            'payé' => $payé,
+            'reste' => $salaire
         ]);
     }
 
@@ -51,7 +53,7 @@ class MoissalairesController extends Controller
 
                     }
 
-                    $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']);
+                    $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']??' ');
                     $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
                     return response()->json(['message' => 'Paiment salaire effectué']);
                 }else{
@@ -63,7 +65,7 @@ class MoissalairesController extends Controller
                 foreach ($fields['mois'] as $mois){
                     $check = Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->first();
                     if($fields['montant'] > $check->reste){
-                        throw new \Error("Il reste {$check->reste} d'avance pour le mois de $mois");
+                        throw new Error("Il reste {$check->reste} d'avance pour le mois de $mois");
                     }else{
                         if($fields['montant'] == $check->reste){
                             $check->update([
@@ -82,13 +84,13 @@ class MoissalairesController extends Controller
 
                 }
 
-                $archive->save($fields['montant'], implode(',', $fields['mois']), 0, $ac_id, $fields['w_id'], $fields['motif']);
+                $archive->save($fields['montant'], implode(',', $fields['mois']), 0, $ac_id, $fields['w_id'], $fields['motif']??' ');
                 $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
                 return response()->json(['message' => 'Paiment avance effectué']);
 
             }
         }else{
-            throw new \Error('Solde d\'ecolage insuffisant');
+            throw new Error('Solde d\'ecolage insuffisant');
         }
 
     }

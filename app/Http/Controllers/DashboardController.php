@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Acs;
 use App\Models\Depensesparmois;
+use App\Models\Ecolages;
 use App\Models\Revenusparmois;
 use Illuminate\Http\Request;
 
@@ -173,6 +174,14 @@ class DashboardController extends Controller
             'credit' => $last_credit->solde,
         ]);
 
+    }
+
+    public function plus(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit){
+        $ac_id = Acs::latest()->first()->id;
+        $ecolage->increment($ac_id, $request->ecolage??0);
+        $kermesse->increment($ac_id, $request->kermesse??0);
+        $droit->increment($ac_id, $request->droit??0);
+        return response()->json(['message' => 'Operation reussi']);
     }
 
 }

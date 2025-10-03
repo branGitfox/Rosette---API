@@ -51,7 +51,7 @@ class WorkersController extends Controller
 
 
         foreach ($mois_list->mois as $m) {
-            $moissalaires->initializeMoissalaires($ac_id, $w_id, $m->mois, 0);
+            $moissalaires->initializeMoissalaires($ac_id, $w_id, $m->mois, 0, $fields['salaire_base']);
         }
 
         if($w->profs->id == 1){
@@ -137,5 +137,21 @@ class WorkersController extends Controller
         Workers::where('id', $id)->update(['status' => $request->status]);
         Archconges::where('w_id', $id)->latest()->first()->update(['status' => 0]);
         return response()->json(['message' => 'Status modifié']);
+    }
+
+    public function auto_stop_conge(){
+        $worker = Workers::all();
+        foreach ($worker as $w){
+           if(Archconges::where('w_id', $w->id)->latest()->exists()){
+               $arch = Archconges::where('w_id', $w->id)->latest()->first();
+               if($arch->fin <= date('Y-m-d')) {
+                   $arch->update(['status' => 0]);
+                   $w->update(['status' => 'actif']);
+
+               }
+           }
+
+        }
+
     }
 }

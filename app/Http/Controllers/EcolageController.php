@@ -37,12 +37,13 @@ class EcolageController extends Controller
     }
 
     //PAIEMENT ECOLAGE
-    public function pay($id,Request $request){
+    public function pay($id,Request $request, RevenusMoisController $revenusmois){
         $montant = $request?->cost;
         Moisecolage::findOrFail($id)->update([
             'payé' => 1
         ]);
         $this->increment($request->ac_id,$request->prof==1?($montant/2):$montant);
+        $revenusmois->increment($request->ac_id, Moisecolage::findOrFail($id)->mois,$request->prof==1?($montant/2):$montant);
         return response()->json(['message' => 'ecolage payé']);
     }
 

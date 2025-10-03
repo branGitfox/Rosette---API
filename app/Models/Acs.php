@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 class Acs extends Model
 {
 
-    protected $fillable = ['annee'];
+    protected $fillable = ['annee', 'debut'];
 
     public function mois() {
         return $this->hasMany('App\Models\Mac', 'id_ac', 'annee');
