@@ -122,7 +122,7 @@ Route::post('operation-plus',[DashboardController::class, 'plus'])->middleware('
 Route::post('nif', [NifsController::class, 'create'])->middleware('auth:sanctum');
 Route::get('nif-1', [NifsController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('nif/{id}', [NifsController::class, 'deletes'])->middleware('auth:sanctum');
-Route::get('identifys-1', [IdentifysController::class, 'list'])->middleware('auth:sanctum');
+Route::get('identify-1', [IdentifysController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('identify/{id}', [IdentifysController::class, 'deletes'])->middleware('auth:sanctum');
 Route::post('identify', [IdentifysController::class, 'create'])->middleware('auth:sanctum');
 
