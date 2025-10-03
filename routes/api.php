@@ -120,9 +120,9 @@ Route::get('flux', [DashboardController::class, 'getFlux'])->middleware('auth:sa
 Route::post('operation-plus',[DashboardController::class, 'plus'])->middleware('auth:sanctum');
 //INFORMATION CONCERNANT L'ECOLE
 Route::post('nif', [NifsController::class, 'create'])->middleware('auth:sanctum');
-Route::get('nif', [NifsController::class, 'list'])->middleware('auth:sanctum');
+Route::get('nif-1', [NifsController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('nif/{id}', [NifsController::class, 'deletes'])->middleware('auth:sanctum');
-Route::get('identify', [IdentifysController::class, 'list'])->middleware('auth:sanctum');
+Route::get('identifys-1', [IdentifysController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('identify/{id}', [IdentifysController::class, 'deletes'])->middleware('auth:sanctum');
 Route::post('identify', [IdentifysController::class, 'create'])->middleware('auth:sanctum');
 

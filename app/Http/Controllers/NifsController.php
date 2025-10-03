@@ -27,6 +27,7 @@ class NifsController extends Controller
         return response()->json(Nifs::all());
     }
 
+
     public function deletes($id){
         Nifs::findOrFail($id)->delete();
         return response()->json(['message' => 'Nif supprimé']);
