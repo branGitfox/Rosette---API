@@ -96,7 +96,7 @@ class EtudiantsController extends Controller
             $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
 
 
-            $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,NULL, NULL, NULL);
+            $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,0, 0, 0);
 
             $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
             $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
@@ -262,7 +262,7 @@ public function deletes($id){
          $ac_id = $salle->classes->ac_id;
          $et_id = $etudiant->id;
          $debut_mois = Acs::latest()->first()->debut;
-         $sousetudiants_instance->create($sa_id, $ac_id, $cl_id, $et_id, NULL, NULL, NULL);
+         $sousetudiants_instance->create($sa_id, $ac_id, $cl_id, $et_id, 0, 0, 0);
          $montant_ecolage = DB::table('classes')->latest()->first()->ecolage;
          $ecolage_devide = $montant_ecolage / ($etudiant->enfantProf == 1 ? 2 : 1);
          $montant_droit = DB::table('classes')->latest()->first()->droit;
@@ -325,15 +325,15 @@ public function suspendre($id){
     }
 
     public function effectif(WorkersController $worker){
-        $boy = Etudiants::isGenre(0)->get()->count();
-        $girl = Etudiants::isGenre(1)->get()->count();
+        $boy = Etudiants::isGenre(1)->get()->count();
+        $girl = Etudiants::isGenre(0)->get()->count();
 
         return response()->json([
-            'labels' => ['Filles', 'Garçons', 'Enseignants', 'Employés'],
+            'labels' => ['Garçons', 'Filles', 'Enseignants', 'Employés'],
             'datasets' => [
                 [
                 'label' => 'Répartition',
-                'data' => [$girl, $boy, $worker->count()['prof']['value'], $worker->count()['all']['value']
+                'data' => [$boy,$girl , $worker->count()['prof']['value'], $worker->count()['all']['value']
                 ],
                 'backgroundColor' => ['#895256', '#9f7126', '#3b82f6', '#10b981'],
                 'borderColor'=>'#fff',

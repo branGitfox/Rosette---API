@@ -71,7 +71,8 @@ class MoissalairesController extends Controller
                 foreach ($fields['mois'] as $mois){
                     $check = Moissalaires::where('mois', $mois)->where('w_id', $fields['w_id'])->where('ac_id', $ac_id)->first();
                     if($fields['montant'] > $check->reste){
-                        throw new Error("Il reste {$check->reste} d'avance pour le mois de $mois");
+                        $message = $fields['type']==0?'avance':'de reste';
+                        throw new Error("Il reste {$check->reste} $message  pour le mois de $mois");
                     }else{
                         if($fields['montant'] == $check->reste){
                             $check->update([
@@ -90,7 +91,7 @@ class MoissalairesController extends Controller
 
                 }
 
-                $archive->save($fields['montant'], implode(',', $fields['mois']), 0, $ac_id, $fields['w_id'], $fields['motif']??' ');
+                $archive->save($fields['montant'], implode(',', $fields['mois']), $fields['type'], $ac_id, $fields['w_id'], $fields['motif']??' ');
                 $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
                 return response()->json(['message' => 'Paiment avance effectué']);
 

@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sousetudiants', function (Blueprint $table) {
-            $table->decimal('noteTotal')->default(0);
+        Schema::create('audits', function (Blueprint $table) {
+            $table->id();
+            $table->string('type');
+            $table->string('details');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sousetudiants', function (Blueprint $table) {
-            //
-        });
+        //
     }
 };

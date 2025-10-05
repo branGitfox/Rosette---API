@@ -34,4 +34,13 @@ class KermessesController extends Controller
 
         return response()->json(['title' => 'Solde de kermesses', 'value' => $kermesses, 'icon' => 'FaCoins']);
     }
+
+    public function decrement($ac_id, $kermesse){
+        if(kermesses::where('ac_id', $ac_id)->exists()){
+            $last_solde = kermesses::where('ac_id', $ac_id)->first()->solde;
+            kermesses::where('ac_id', $ac_id)->update([
+                'solde' => $last_solde - $kermesse
+            ]);
+        }
+    }
 }

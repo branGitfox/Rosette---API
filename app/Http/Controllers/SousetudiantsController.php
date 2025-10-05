@@ -18,7 +18,7 @@ class SousetudiantsController extends Controller
             'note1' => $note1,
             'note2' => $note2,
             'note3' => $note3,
-            'noteTotal' =>NULL,
+            'noteTotal' =>0,
             'et_id' => $et_id,
         ]);
     }
@@ -30,7 +30,7 @@ class SousetudiantsController extends Controller
 
     public function update_note($id, Request $request){
 //        return ['message' => $request->noteTotal];
-       Sousetudiants::findOrFail($id)->update(['note1' => $request->note1==0?NULL:$request->note1, 'note2' => $request->note2==0?NULL:$request->note2, 'note3' => $request->note3==0?NULL:$request->note3, 'noteTotal' => $request->noteTotal==0?NULL:$request->noteTotal]);
+       Sousetudiants::findOrFail($id)->update(['note1' => $request->note1==0?0:$request->note1, 'note2' => $request->note2==0?0:$request->note2, 'note3' => $request->note3==0?0:$request->note3, 'noteTotal' => $request->noteTotal==0?0:$request->noteTotal]);
         $sous_etudiant_updateed = Sousetudiants::findOrFail($id);
 
         $moyenne_admission = Admissions::where('ac_id', $sous_etudiant_updateed->ac_id)->first();
@@ -50,6 +50,8 @@ class SousetudiantsController extends Controller
         return response()->json(['message' => 'note modifié']);
     }
 
-
+    public function paymois($id){
+        return response()->json(Sousetudiants::where('id', $id)->with('ecolage')->first());
+    }
 
 }

@@ -21,9 +21,9 @@ return new class extends Migration
             $table->foreign('et_id')->references('id')->on('etudiants')->cascadeOnDelete();
             $table->foreign('sa_id')->references('id')->on('salles')->cascadeOnDelete();
             $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
-            $table->decimal('note1')->nullable();
-            $table->decimal('note2')->nullable();
-            $table->decimal('note3')->nullable();
+            $table->decimal('note1')->default(0);
+            $table->decimal('note2')->default(0);
+            $table->decimal('note3')->default(0);
             $table->timestamps();
         });
     }

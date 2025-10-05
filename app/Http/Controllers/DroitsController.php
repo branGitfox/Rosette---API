@@ -32,4 +32,13 @@ class DroitsController extends Controller
 
         return response()->json(['title' => 'Solde de droits', 'value' => $droits, 'icon' => 'FaWallet']);
     }
+
+    public function decrement($ac_id, $droit){
+        if(Droits::where('ac_id', $ac_id)->exists()){
+            $last_solde = Droits::where('ac_id', $ac_id)->first()->solde;
+            Droits::where('ac_id', $ac_id)->update([
+                'solde' => $last_solde - $droit
+            ]);
+        }
+    }
 }

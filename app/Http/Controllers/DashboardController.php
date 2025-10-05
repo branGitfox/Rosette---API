@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Acs;
 use App\Models\Depensesparmois;
+use App\Models\Droits;
 use App\Models\Ecolages;
+use App\Models\Kermesses;
+use App\Models\Moins;
+use App\Models\Ajouts;
 use App\Models\Revenusparmois;
+use Error;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -176,12 +181,86 @@ class DashboardController extends Controller
 
     }
 
-    public function plus(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit){
+    //DEPOT D'ARGENT
+    public function plus(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, RevenusMoisController $revenusmois){
         $ac_id = Acs::latest()->first()->id;
-        $ecolage->increment($ac_id, $request->ecolage??0);
-        $kermesse->increment($ac_id, $request->kermesse??0);
-        $droit->increment($ac_id, $request->droit??0);
-        return response()->json(['message' => 'Operation reussi']);
+        $ecolage->increment($ac_id, $request->ecolage);
+        $kermesse->increment($ac_id, $request->kermesse);
+        $droit->increment($ac_id, $request->droit);
+        $motif = $request->motif;
+        Ajouts::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
+        $revenusmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
+        return response()->json(['message' => 'Opération reussi']);
     }
 
+    //RETIRER DE L'ARGENT
+    public function moins(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, DepensesMoisController $depensesmois){
+        $ac_id = Acs::latest()->first()->id;
+        $solde_ecolage = Ecolages::where('ac_id', $ac_id)->first()->solde;
+        $solde_droit = Droits::where('ac_id', $ac_id)->first()->solde;
+        $solde_kermesse = Kermesses::where('ac_id', $ac_id)->first()->solde;
+
+        if($request->ecolage !=0&&$request->ecolage > $solde_ecolage){
+            throw new Error('Solde d\'ecolage insuffisant');
+        }
+
+        if($request->droit != 0&&$request->droit > $solde_droit){
+            throw new Error('Solde de droit insuffisant');
+        }
+
+        if($request->kermesse!= 0 &&$request->kermesse> $solde_kermesse){
+            throw new Error('Solde de kermesse insuffisant');
+        }
+        $ecolage->decrement($ac_id, $request->ecolage);
+        $kermesse->decrement($ac_id, $request->kermesse);
+        $droit->decrement($ac_id, $request->droit);
+        $motif = $request->motif;
+        Moins::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
+        $depensesmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
+        return response()->json(['message' => 'Opération reussi']);
+    }
+
+    public function moins_list (){
+        $list = [];
+        foreach (Moins::query()->orderByDesc('created_at')->get() as $moins){
+            array_push($list, ['id' => $moins['id'], 'motif' => $moins['motif'], 'ops' => [
+                [
+                'type' => 'écolage',
+                'montant' => $moins['ecolage']
+                    ],
+                [
+                    'type' => 'droit',
+                    'montant' => $moins['droit']
+                ],
+                [
+                    'type' => 'kermesse',
+                    'montant' => $moins['kermesse']
+                ]
+            ]]);
+        }
+
+        return response()->json($list);
+    }
+
+    public function plus_list (){
+        $list = [];
+        foreach (Ajouts::query()->orderByDesc('created_at')->get() as $moins){
+            array_push($list, ['id' => $moins['id'], 'motif' => $moins['motif'], 'ops' => [
+                [
+                    'type' => 'écolage',
+                    'montant' => $moins['ecolage']
+                ],
+                [
+                    'type' => 'droit',
+                    'montant' => $moins['droit']
+                ],
+                [
+                    'type' => 'kermesse',
+                    'montant' => $moins['kermesse']
+                ]
+            ]]);
+        }
+
+        return response()->json($list);
+    }
 }

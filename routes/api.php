@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcController;
 use App\Http\Controllers\AdmissionsController;
+use App\Http\Controllers\AuditsController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepensesController;
@@ -177,3 +178,20 @@ Route::get('/user-auto', function() {
 
 
 });
+
+
+//OPERATION
+Route::post('op-plus', [DashboardController::class, 'plus'])->middleware('auth:sanctum');
+Route::post('op-moins', [DashboardController::class, 'moins'])->middleware('auth:sanctum');
+Route::get('moins-list', [DashboardController::class,'moins_list'] )->middleware('auth:sanctum');
+Route::get('plus-list', [DashboardController::class,'plus_list'] )->middleware('auth:sanctum');
+
+//AUDITION
+
+Route::get('audit', [AuditsController::class, 'list'] )->middleware('auth:sanctum');
+Route::post('audit-del', [AuditsController::class, 'deletes'] )->middleware('auth:sanctum');
+Route::get('audit-stats', [AuditsController::class, 'stats'] )->middleware('auth:sanctum');
+
+//pasmois
+
+Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois'] );

@@ -13,7 +13,7 @@ class UsersController extends Controller
 /**
 POUR LA CREATION D'UN UTILISATEUR
  */
-    public function creation(Request $request) {
+    public function creation(Request $request, AuditsController $audit ) {
 
         $fields = $request->validate([
             'name' => 'required|string',
@@ -31,6 +31,8 @@ POUR LA CREATION D'UN UTILISATEUR
         ]);
 
         User::create($fields);
+        $message = 'Creation d\'un administrateur';
+        $audit->listen('Paramètres', $message, $request->user()->id);
         return response()->json([
             'message' => 'utilisateur creé'
         ]);
