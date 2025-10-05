@@ -32,7 +32,7 @@ class AuditsController extends Controller
 
     public function stats (){
         $param = Audits::types('Paramètres')->get()->count();
-        $etudiants = Audits::types('Étudiant')->get()->count();
+        $etudiants = Audits::types('Étudiants')->get()->count();
         $financier = Audits::types('Financier')->get()->count();
         $worker = Audits::types('Employé')->get()->count();
 
