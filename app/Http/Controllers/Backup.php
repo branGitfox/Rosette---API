@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 class Backup extends Controller
 {
 
-    public function backupDatabase()
+    public function backupDatabase(Request $request, AuditsController $audit)
     {
 
         $tables = DB::select('SHOW TABLES');
@@ -54,13 +54,14 @@ class Backup extends Controller
         }
 
         File::put($path, $backupSql);
-
+        $message = "Sauvegarde des données";
+        $audit->listen('Paramètres', $message, $request->user()->id);
         return "Backup créé : $path";
     }
 
 
 
-    public function restoreDatabase(Request $request)
+    public function restoreDatabase(Request $request, AuditsController $audit)
     {
 
         $filePath = base_path('database/backups/' . $request->db);
@@ -115,7 +116,8 @@ class Backup extends Controller
                 'message' => $errors
             ];
         }
-
+        $message = "Importation des données";
+        $audit->listen('Paramètres', $message, $request->user()->id);
         return [
             'type' => 'success',
             'message' => 'Importation réussie '
