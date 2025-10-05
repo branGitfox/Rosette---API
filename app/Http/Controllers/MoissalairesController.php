@@ -29,7 +29,7 @@ class MoissalairesController extends Controller
     }
 
 
-    public function pay(Request $request, EcolageController $ecolages, ArchsalsController $archive, DepensesMoisController $depensemois){
+    public function pay(Request $request, EcolageController $ecolages, ArchsalsController $archive, DepensesMoisController $depensemois, AuditsController $audit){
         $fields = $request->validate([
             'montant' => 'required',
             'mois' => 'required',
@@ -59,6 +59,8 @@ class MoissalairesController extends Controller
 
                         $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']??' ');
                         $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
+                    $message = 'Paiement d\'un employé';
+                    $audit->listen('Financier', $message, $request->user()->id);
                         return response()->json(['message' => 'Paiment salaire effectué']);
 
 
@@ -93,7 +95,9 @@ class MoissalairesController extends Controller
 
                 $archive->save($fields['montant'], implode(',', $fields['mois']), $fields['type'], $ac_id, $fields['w_id'], $fields['motif']??' ');
                 $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
-                return response()->json(['message' => 'Paiment avance effectué']);
+                $message = 'Paiement d\'un employé';
+                $audit->listen('Financier', $message, $request->user()->id);
+                return response()->json(['message' => 'Paiment'.($fields['type']==0?' avance':'reste').' effectué']);
 
             }
         }else{

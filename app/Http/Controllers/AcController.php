@@ -12,7 +12,7 @@ class AcController extends Controller
 {
     //CREATION D'UNE ANNEE SCOLAIRE
 
-    public function create(Request $request, MacController $mac, MoissalairesController $moissalaires) {
+    public function create(Request $request, MacController $mac, MoissalairesController $moissalaires, AuditsController $audit) {
         $fields = $request->validate([
             'annee' => 'required|unique:acs',
             'mois' => 'required',
@@ -41,6 +41,8 @@ class AcController extends Controller
         }
 
 
+        $message = 'Creation d\'une Annee scolaire';
+        $audit->listen('Paramètres', $message, $request->user()->id);
         return response()->json(['message' => 'Annee scolaire cree']);
     }
 

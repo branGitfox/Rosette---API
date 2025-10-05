@@ -182,7 +182,7 @@ class DashboardController extends Controller
     }
 
     //DEPOT D'ARGENT
-    public function plus(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, RevenusMoisController $revenusmois){
+    public function plus(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, RevenusMoisController $revenusmois, AuditsController $audit){
         $ac_id = Acs::latest()->first()->id;
         $ecolage->increment($ac_id, $request->ecolage);
         $kermesse->increment($ac_id, $request->kermesse);
@@ -190,11 +190,13 @@ class DashboardController extends Controller
         $motif = $request->motif;
         Ajouts::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
         $revenusmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
+        $message = "Depot d'argent";
+        $audit->listen('Financier', $message, $request->user()->id);
         return response()->json(['message' => 'Opération reussi']);
     }
 
     //RETIRER DE L'ARGENT
-    public function moins(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, DepensesMoisController $depensesmois){
+    public function moins(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, DepensesMoisController $depensesmois, AuditsController $audit){
         $ac_id = Acs::latest()->first()->id;
         $solde_ecolage = Ecolages::where('ac_id', $ac_id)->first()->solde;
         $solde_droit = Droits::where('ac_id', $ac_id)->first()->solde;
@@ -217,6 +219,8 @@ class DashboardController extends Controller
         $motif = $request->motif;
         Moins::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
         $depensesmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
+        $message = "Retrait d'argent";
+        $audit->listen('Financier', $message, $request->user()->id);
         return response()->json(['message' => 'Opération reussi']);
     }
 

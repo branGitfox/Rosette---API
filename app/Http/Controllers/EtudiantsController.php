@@ -17,7 +17,7 @@ class EtudiantsController extends Controller
 {
     //INSCRIPTION D'UN ETUDIANT
 
-    public function inscription(Request $request, SousetudiantsController $sousetudiants, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
+    public function inscription(Request $request, SousetudiantsController $sousetudiants,AuditsController $audit, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
         $fields = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
@@ -116,7 +116,8 @@ class EtudiantsController extends Controller
             }
 
 
-
+            $message = 'Inscription d\'un etudiant';
+            $audit->listen('Étudiants', $message, $request->user()->id);
             return response()->json(['message' => 'Etudiant inscrit']);
         }
 
@@ -164,7 +165,7 @@ class EtudiantsController extends Controller
     }
 
     //MODIFICATION ETUDIANT
-    public function updates($id, Request $request, SousetudiantsController $sousetudiants){
+    public function updates($id, Request $request, SousetudiantsController $sousetudiants, AuditsController $audit){
 
         $fields = $request->validate([
             'nom' => 'required',
@@ -236,6 +237,8 @@ class EtudiantsController extends Controller
             ]);
             $sous_et = Sousetudiants::where('et_id', $request->id)->latest()->first()->id;
             $sousetudiants->update($sous_et, ['cl_id' => $request->cl_id, 'sa_id' => $request->sa_id]);
+            $message = 'Modification d\'un etudiant';
+            $audit->listen('Étudiants', $message, $request->user()->id);
             return response()->json(['message' => 'Etudiant modifie']);
 
         }
@@ -244,13 +247,15 @@ class EtudiantsController extends Controller
 
 //SUPPRESSION ETUDIANT
 
-public function deletes($id){
+public function deletes($id, Request $request, AuditsController $audit) {
         Etudiants::findOrFail($id)->delete();
+    $message = 'Reinscription d\'un etudiant';
+    $audit->listen('Étudiants', $message, $request->user()->id);
         return response()->json(['message' => 'Etudiant supprime']);
 }
 
 //REINSCRIPTION ETUDIANT
- public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
+ public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance,AuditsController $audit, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
      if(Sousetudiants::where('sa_id', $request->sa_id)->count() == Salles::where('id', $request->sa_id)->first()->effectif){
          throw new \Error('La salle a atteint son effectif');
      }else {
@@ -286,15 +291,18 @@ public function deletes($id){
          }
 
          $sousetudiant->update(['transfert' => true]);
-
+         $message = 'Reinscription d\'un etudiant';
+         $audit->listen('Étudiants', $message, $request->user()->id);
          return response()->json(['message' => 'Etudiant transferé']);
      }
 }
 
 //SUSPENDRE UN ELEVE
 
-public function suspendre($id){
+public function suspendre($id, Request $request, AuditsController $audit){
       Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => 'suspendu', 'transfert' => true]);
+    $message = 'Suspendre un etudiant';
+    $audit->listen('Étudiants', $message, $request->user()->id);
       return response()->json(['message' => 'Etudiant suspendu']);
 }
 

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ArchcongesController extends Controller
 {
-    public function create(Request $request){
+    public function create(Request $request, AuditsController $audit){
         $ac_id= Acs::latest()->first()->id;
         $fields = $request->validate([
             'debut' => 'required',
@@ -35,7 +35,8 @@ class ArchcongesController extends Controller
             Workers::where('id', $fields['w_id'])->update([
                 'status' => 'congé',
             ]);
-
+            $message = 'Congé d\'un employé';
+            $audit->listen('Employé', $message, $request->user()->id);
             return response()->json(['message' => 'Congé declenché']);
         }
 
@@ -46,12 +47,14 @@ class ArchcongesController extends Controller
         return response()->json(Archconges::query()->where('w_id',$id )->orderByDesc('created_at')->get());
     }
 
-    public function deletes($id){
+    public function deletes($id, Request $request, AuditsController $audit){
        $arch = Archconges::findOrFail($id);
        Workers::findOrFail($arch->w_id)->update([
            'status' => 'actif'
        ]);
        $arch->delete();
+        $message = 'Annulation d\'un Congé';
+        $audit->listen('Employé', $message, $request->user()->id);
        return response()->json(['message' => 'Congé annulé']);
 
     }

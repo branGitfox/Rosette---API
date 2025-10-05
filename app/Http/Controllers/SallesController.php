@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class SallesController extends Controller
 {
     //CREATION SALLES
-    public function create(Request $request){
+    public function create(Request $request, AuditsController $audit){
         $fields = $request->validate([
             'nom_salle' => 'required',
             'effectif' => 'required|integer',
@@ -39,7 +39,8 @@ class SallesController extends Controller
             'cl_id' => $fields['cl_id'],
             'ac_id' => $takeAcid,
         ]);
-
+        $message = 'Creation d\'une Salle de classe';
+        $audit->listen('Paramètres', $message, $request->user()->id);
         return response()->json(['message' => 'Salle de classe creé']);
 
 

@@ -11,7 +11,7 @@ class ClassesController extends Controller
 {
     //CREATION CLASSE
 
-    public function create(Request $request){
+    public function create(Request $request, AuditsController $audit){
         $fields = $request->validate([
             'nom_classe' => 'required',
             'ac_id' => 'required',
@@ -43,6 +43,8 @@ class ClassesController extends Controller
             'kermesse' => $fields['kermesse'],
 
         ]);
+        $message = 'Creation d\'une classe';
+        $audit->listen('Paramètres', $message, $request->user()->id);
         return response()->json(['message' => "classe Creé"]);
     }
 

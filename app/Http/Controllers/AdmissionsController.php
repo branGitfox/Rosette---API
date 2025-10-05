@@ -11,7 +11,7 @@ class AdmissionsController extends Controller
 {
     //CREATION REGLAGE D"ADMISSION
 
-    public function create(Request $request){
+    public function create(Request $request, AuditsController $audit){
         $fields =$request->validate([
             'note' => 'required|integer',
             'ac_id' => 'required'
@@ -32,6 +32,9 @@ class AdmissionsController extends Controller
                 'note' => $fields['note'],
                 'ac_id' => $takeAcId,
             ]);
+
+            $message = 'Creation d\'une Admission';
+            $audit->listen('Paramètres', $message, $request->user()->id);
             return response()->json(['message' => 'Admission creé']);
         }
     }

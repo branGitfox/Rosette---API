@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class WorkersController extends Controller
 {
-    public function create( Request $request, MoissalairesController $moissalaires, MatieresController $matieres){
+    public function create( Request $request, MoissalairesController $moissalaires, MatieresController $matieres, AuditsController $audit){
         $fields = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
@@ -63,7 +63,8 @@ class WorkersController extends Controller
         }
 
 
-
+        $message = 'Création d\'un employé';
+        $audit->listen('Employé', $message, $request->user()->id);
         return ['message' => 'Employé  creé'];
     }
 
@@ -80,7 +81,7 @@ class WorkersController extends Controller
     }
 
     //MODIFICATION EMPLOYE
-    public function update($id, Request $request,MatieresController $matieres){
+    public function update($id, Request $request,MatieresController $matieres, AuditsController $audit){
         $fields = $request->all();
         $worker_to_modify = Workers::findOrFail($id);
         if($request->file('photo') !== NULL){
@@ -118,12 +119,15 @@ class WorkersController extends Controller
         }
 
 
-
+        $message = 'Modification d\'un employé';
+        $audit->listen('Employé', $message, $request->user()->id);
         return ['message' => 'Employé  modifié'];
     }
 
-    public function delete($id){
+    public function delete($id, AuditsController $audit, Request $request){
         Workers::findOrFail($id)->delete();
+        $message = 'Suppression d\'un employé';
+        $audit->listen('Employé', $message, $request->user()->id);
         return response()->json(['message' => 'Employé supprimé']);
     }
 

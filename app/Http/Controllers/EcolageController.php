@@ -37,13 +37,15 @@ class EcolageController extends Controller
     }
 
     //PAIEMENT ECOLAGE
-    public function pay($id,Request $request, RevenusMoisController $revenusmois){
+    public function pay($id,Request $request, RevenusMoisController $revenusmois, AuditsController $audit){
         $montant = $request?->cost;
         Moisecolage::findOrFail($id)->update([
             'payé' => 1
         ]);
         $this->increment($request->ac_id,$request->prof==1?($montant/2):$montant);
         $revenusmois->increment($request->ac_id, Moisecolage::findOrFail($id)->mois,$request->prof==1?($montant/2):$montant);
+        $message = "Paiement ecolage";
+        $audit->listen('Financier', $message, $request->user()->id);
         return response()->json(['message' => 'ecolage payé']);
     }
 

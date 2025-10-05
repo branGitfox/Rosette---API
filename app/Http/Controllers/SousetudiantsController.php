@@ -28,7 +28,7 @@ class SousetudiantsController extends Controller
         Sousetudiants::findOrFail($id)->update($request);
     }
 
-    public function update_note($id, Request $request){
+    public function update_note($id, Request $request, AuditsController $audit){
 //        return ['message' => $request->noteTotal];
        Sousetudiants::findOrFail($id)->update(['note1' => $request->note1==0?0:$request->note1, 'note2' => $request->note2==0?0:$request->note2, 'note3' => $request->note3==0?0:$request->note3, 'noteTotal' => $request->noteTotal==0?0:$request->noteTotal]);
         $sous_etudiant_updateed = Sousetudiants::findOrFail($id);
@@ -47,6 +47,8 @@ class SousetudiantsController extends Controller
             $status='cours';
         }
         Sousetudiants::findOrFail($id)->update(['status_admissions' => $status]);
+        $message = 'Modification note d\'un etudiant';
+        $audit->listen('Étudiants', $message, $request->user()->id);
         return response()->json(['message' => 'note modifié']);
     }
 
