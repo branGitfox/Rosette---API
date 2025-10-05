@@ -97,7 +97,7 @@ class MoissalairesController extends Controller
                 $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
                 $message = 'Paiement d\'un employé';
                 $audit->listen('Financier', $message, $request->user()->id);
-                return response()->json(['message' => 'Paiment'.($fields['type']==0?' avance':'reste').' effectué']);
+                return response()->json(['message' => 'Paiment'.($fields['type']==0?' avance':' reste').' effectué']);
 
             }
         }else{
