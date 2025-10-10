@@ -47,6 +47,7 @@ Route::post('/classe-creation', [ClassesController::class, 'create'])->middlewar
 Route::get('/classe-list', [ClassesController::class, 'list'])->middleware('auth:sanctum');
 Route::get('/classe-list_year/{id}', [ClassesController::class, 'list_year'])->middleware('auth:sanctum');
 Route::delete('/classe-delete/{id}', [ClassesController::class, 'delete'])->middleware('auth:sanctum');
+Route::put('classe-update/{id}', [ClassesController::class, 'updates'])->middleware('auth:sanctum');
 
 //Route POUR SALLE
 Route::post('salle-creation', [SallesController::class, 'create'])->middleware('auth:sanctum');

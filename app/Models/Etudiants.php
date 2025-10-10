@@ -1,150 +1,1 @@
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Etudiants extends Model
-{
-    protected $fillable = [
-        'nom',
-        'prenom',
-        'sexe',
-        'dateNaissance',
-        'lieuNaissance',
-        'adresse',
-        'nomPere',
-        'nomMere',
-        'telephonePere',
-        'telephoneMere',
-        'prenomMere',
-        'prenomPere',
-        'nomTuteur',
-        'prenomTuteur',
-        'telephoneTuteur',
-        'matricule',
-        'ecole',
-        'enfantProf',
-        'photo',
-        'ac_id'
-    ];
-
-    public function sousetudiants() {
-        return $this->hasMany(Sousetudiants::class, 'et_id', 'id');
-    }
-
-    public function scopeSexe($query, $sexe){
-        if($sexe == '0'){
-            return $query;
-        }else{
-            return $query->where('sexe', $sexe=='Homme'?1:0);
-        }
-
-    }
-
-    public function scopeYear($query, $annee){
-        if($annee == 0){
-            return $query;
-        }else{
-            return $query->Where('ac_id', $annee);
-        }
-
-    }
-
-    public function scopeYearNote($query, $annee){
-        if($annee == 0){
-            return $query;
-        }else{
-            return $query->whereHas('sousetudiants', function($q) use($annee){
-                $q->where('ac_id', $annee);
-            });
-        }
-
-    }
-    public function scopeClasse($query, $classe){
-        if($classe == 0){
-            return $query;
-        }else{
-            return $query->whereHas('sousetudiants', function($q) use ($classe){
-                $q->where('cl_id', $classe);
-            });
-        }
-    }
-
-
-    public function scopeSalle($query, $salle){
-        if($salle == 0){
-            return $query;
-        }else{
-            return $query->whereHas('sousetudiants', function($q) use ($salle){
-                $q->where('sa_id', $salle);
-            });
-        }
-    }
-
-    public function scopeEcolage($query, $status){
-        if($status == 0){
-            return $query;
-        }else{
-
-            return $query->whereHas('sousetudiants', function($q) use ($status){
-                if ($status == 'Complet') {
-
-                    $q->whereDoesntHave('ecolage', function ($u) {
-                        $u->where('payé', 0)->where('ac_id', 1);
-                    });
-                } else {
-
-                    $q->whereHas('ecolage', function ($u) {
-                        $u->where('payé', 0);
-                    });
-                }
-
-            });
-        }
-    }
-
-    public function scopeMoisecolage($query, $mois, $status){
-        if($mois == 0){
-            return $query;
-        }else{
-
-            return $query->whereHas('sousetudiants', function($q) use ($mois, $status){
-                    $q->whereHas('ecolage', function ($u) use ($mois, $status) {
-                        $u->where('mois', $mois)->where('payé', $status==0|| $status =='Complet'?1:0);
-                    });
-            });
-        }
-    }
-
-
-    public function scopeMention($query, $mention){
-        if($mention == 0){
-            return $query;
-        }else{
-            return $query->whereHas('sousetudiants', function($q) use ($mention){
-                if ($mention === 'Aucune') {
-                     $q->where('noteTotal', '<', 10);
-                } elseif ($mention === 'passable') {
-                     $q->where('noteTotal', '<', 12);
-                } elseif ($mention === 'A-bien') {
-                      $q->where('noteTotal', '<', 14);
-                } elseif ($mention === 'Bien') {
-                      $q->where('noteTotal', '<', 17);
-                } elseif ($mention === 'Très-bien') {
-                      $q->where('noteTotal', '<', 19);
-                } elseif ($mention === 'Honorable') {
-                     $q->where('noteTotal', '>', 18);
-                }
-            });
-        }
-
-    }
-
-    public function scopeIsGenre($query, $sexe){
-        return $query->where('sexe', $sexe);
-    }
-
-
-
-}
+<?phpnamespace App\Models;use Illuminate\Database\Eloquent\Model;class Etudiants extends Model{    protected $fillable = [        'nom',        'prenom',        'sexe',        'dateNaissance',        'lieuNaissance',        'adresse',        'nomPere',        'nomMere',        'telephonePere',        'telephoneMere',        'prenomMere',        'prenomPere',        'nomTuteur',        'prenomTuteur',        'telephoneTuteur',        'matricule',        'ecole',        'enfantProf',        'photo',        'ac_id'    ];    public function sousetudiants() {        return $this->hasMany(Sousetudiants::class, 'et_id', 'id');    }    public function scopeSexe($query, $sexe){        if($sexe == '0'){            return $query;        }else{            return $query->where('sexe', $sexe=='Homme'?1:0);        }    }    public function scopeYear($query, $annee){        if($annee == 0){            return $query;        }else{            return $query->Where('ac_id', $annee);        }    }    public function scopeYearNote($query, $annee){        if($annee == 0){            return $query;        }else{            return $query->whereHas('sousetudiants', function($q) use($annee){                $q->where('ac_id', $annee);            });        }    }    public function scopeClasse($query, $classe){        if($classe == 0){            return $query;        }else{            return $query->whereHas('sousetudiants', function($q) use ($classe){                $q->where('cl_id', $classe);            });        }    }    public function scopeSalle($query, $salle){        if($salle == 0){            return $query;        }else{            return $query->whereHas('sousetudiants', function($q) use ($salle){                $q->where('sa_id', $salle);            });        }    }    public function scopeEcolage($query, $status){        if($status == 0){            return $query;        }else{            return $query->whereHas('sousetudiants', function($q) use ($status){                if ($status == 'Complet') {                    $q->whereDoesntHave('ecolage', function ($u) {                        $u->where('payé', 0)->where('ac_id', 1);                    });                } else {                    $q->whereHas('ecolage', function ($u) {                        $u->where('payé', 0);                    });                }            });        }    }    public function scopeMoisecolage($query, $mois, $status){        if($mois == 0){            return $query;        }else{            return $query->whereHas('sousetudiants', function($q) use ($mois, $status){                    $q->whereHas('ecolage', function ($u) use ($mois, $status) {                        $u->where('mois', $mois)->where('payé', $status==0|| $status =='Complet'?1:0);                    });            });        }    }    public function scopeMention($query, $mention){        if($mention == 0){            return $query;        }else{            return $query->whereHas('sousetudiants', function($q) use ($mention){                if ($mention === 'Aucune') {                     $q->where('noteTotal', '<', 10);                } elseif ($mention === 'passable') {                     $q->where('noteTotal', '<', 12);                } elseif ($mention === 'A-bien') {                      $q->where('noteTotal', '<', 14);                } elseif ($mention === 'Bien') {                      $q->where('noteTotal', '<', 17);                } elseif ($mention === 'Très-bien') {                      $q->where('noteTotal', '<', 19);                } elseif ($mention === 'Honorable') {                     $q->where('noteTotal', '>', 18);                }            });        }    }    public function scopeIsGenre($query, $sexe){        return $query->where('sexe', $sexe);    }}

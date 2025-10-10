@@ -33,7 +33,7 @@ class ClassesController extends Controller
             'kermesse.integer' => 'Kermesse doit etre en chiffre'
         ]
         );
-        $takeAnneId = Acs::where('annee', $fields['ac_id'])->first()->id;
+        $takeAnneId = Acs::where('annee', $fields['ac_id'])->latest()->first()->id;
 
         Classes::create([
             'nom_classe' => $fields['nom_classe'],
@@ -70,5 +70,45 @@ class ClassesController extends Controller
         Classes::findOrFail($id)->delete();
 
         return response()->json(['message' => 'Classe supprimé']);
+    }
+
+    public function updates($id, Request $request, AuditsController $audit){
+        $fields = $request->validate([
+        'nom_classe' => 'required',
+        'ac_id' => 'required',
+        'ecolage' => 'required|integer|max:999999999',
+        'droit' => 'required|integer|max:999999999',
+        'kermesse' => 'required|integer|max:999999999',
+
+    ],
+        [
+            'nom_classe.required' => 'Nom de la classe obligatoire',
+            'ac_id.required' => 'Année scolaire obligatoire',
+            'ac_id.exists' => 'Cette année scolaire n\'existe pas',
+
+            'ecolage.required' => 'Ecolage obligatoire',
+            'ecolage.integer' => 'Ecolage doit être un chiffre',
+            'ecolage.max' => 'Ecolage ne doit pas dépasser 999999999',
+
+            'droit.required' => 'Droit obligatoire',
+            'droit.integer' => 'Droit doit être un chiffre',
+            'droit.max' => 'Droit ne doit pas dépasser 999999999',
+
+            'kermesse.required' => 'Kermesse obligatoire',
+            'kermesse.integer' => 'Kermesse doit être un chiffre',
+            'kermesse.max' => 'Kermesse ne doit pas dépasser 999999999',
+        ]);
+
+        Classes::findOrFail($id)->update([
+            'nom_classe' => $fields['nom_classe'],
+            'ac_id' => $fields['ac_id'],
+            'ecolage' => $fields['ecolage'],
+            'droit' => $fields['droit'],
+            'kermesse' => $fields['kermesse'],
+
+        ]);
+        $message = 'Modification d\'une classe';
+        $audit->listen('Paramètres', $message, $request->user()->id);
+        return response()->json(['message' => "classe Creé"]);
     }
 }
