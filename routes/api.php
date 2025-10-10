@@ -135,6 +135,7 @@ Route::post('identify', [IdentifysController::class, 'create'])->middleware('aut
 
 Route::post('domaines', [DomainesController::class, 'create'])->middleware('auth:sanctum');
 Route::get('domaines', [DomainesController::class, 'list'])->middleware('auth:sanctum');
+Route::put('domaines/{id}', [DomainesController::class, 'updates'])->middleware('auth:sanctum');
 Route::delete('domaines/{id}', [DomainesController::class, 'deletes'])->middleware('auth:sanctum');
 Route::get('export', [\App\Http\Controllers\Backup::class, 'backupDatabase'])->middleware('auth:sanctum');
 Route::post('import', [\App\Http\Controllers\Backup::class, 'restoreDatabase'])->middleware('auth:sanctum');
