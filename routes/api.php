@@ -55,6 +55,7 @@ Route::get('salle-list', [SallesController::class, 'list'])->middleware('auth:sa
 Route::get('/salle-list_year/{id}', [SallesController::class, 'list_year'])->middleware('auth:sanctum');
 Route::delete('salle-delete/{id}', [SallesController::class, 'delete'])->middleware('auth:sanctum');
 Route::get('salle-list_last', [SallesController::class, 'list_last'])->middleware('auth:sanctum');
+Route::put('salle-update/{id}', [SallesController::class, 'updates'])->middleware('auth:sanctum');
 
 //ROUTE POUR REGLAGE D"ADMISSION
 Route::post('admission-creation', [AdmissionsController::class, 'create'])->middleware('auth:sanctum');

@@ -14,22 +14,19 @@ class SallesController extends Controller
     public function create(Request $request, AuditsController $audit){
         $fields = $request->validate([
             'nom_salle' => 'required',
-            'effectif' => 'required|integer',
-//            'ac_id' => 'required|exists:acs,id',
+            'effectif' => 'required|integer|max:300',
             'cl_id' => 'required|exists:classes,id',
         ],
+            [
+                'nom_salle.required' => 'Le nom de la salle est obligatoire',
 
+                'effectif.required' => 'L\'effectif est obligatoire',
+                'effectif.integer' => 'L\'effectif doit être un nombre entier',
+                'effectif.max' => 'L\'effectif ne doit pas dépasser 300 élèves',
 
-        [
-            'nom_salle.required' => 'Le nom de la salle est obligatoire',
-            'effectif.required' => 'L\'effectif est obligatoire',
-            'effectif.integer' => 'L\'effectif doit etre un nombre entier',
-//            'ac_id.required' => 'L\'ac_id est obligatoire',
-//            'ac_id.exists' => 'L\'annee scolaire n\'existe pas',
-            'cl_id.required' => 'Le CL_id est obligatoire',
-            'cl_id.exists' => 'Le CL_id n\'existe pas',
-        ]
-        );
+                'cl_id.required' => 'La classe est obligatoire',
+                'cl_id.exists' => 'La classe sélectionnée n\'existe pas',
+            ]);
 
     $takeAcid = Classes::with('acs')->where('id', $fields['cl_id'])->first()->acs->id;
 
@@ -74,5 +71,35 @@ class SallesController extends Controller
         }
 
         return response()->json(Salles::where('ac_id', $ac_id)->orderBy('created_at', 'desc')->get());
+    }
+
+    public function updates($id, Request $request, AuditsController $audit){
+        $fields = $request->validate([
+            'nom_salle' => 'required',
+            'effectif' => 'required|integer|max:300',
+            'cl_id' => 'required|exists:classes,id',
+        ],
+            [
+                'nom_salle.required' => 'Le nom de la salle est obligatoire',
+
+                'effectif.required' => 'L\'effectif est obligatoire',
+                'effectif.integer' => 'L\'effectif doit être un nombre entier',
+                'effectif.max' => 'L\'effectif ne doit pas dépasser 300 élèves',
+
+                'cl_id.required' => 'La classe est obligatoire',
+                'cl_id.exists' => 'La classe sélectionnée n\'existe pas',
+            ]);
+
+        $takeAcid = Classes::with('acs')->where('id', $fields['cl_id'])->first()->acs->id;
+
+        Salles::findOrFail($id)->update([
+            'nom_salle' => $fields['nom_salle'],
+            'effectif' => $fields['effectif'],
+            'cl_id' => $fields['cl_id'],
+            'ac_id' => $takeAcid,
+        ]);
+        $message = 'Modification d\'une Salle de classe';
+        $audit->listen('Paramètres', $message, $request->user()->id);
+        return response()->json(['message' => 'Salle de classe modifié']);
     }
 }
