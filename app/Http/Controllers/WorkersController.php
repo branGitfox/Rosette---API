@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Acs;
 use App\Models\Archconges;
 use App\Models\Workers;
+use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +18,7 @@ class WorkersController extends Controller
             'sexe' => 'required',
             'email' => 'required|unique:workers',
             'adresse' => 'required',
-            'salaire_base' => 'required',
+            'salaire_base' => 'required|max:999999999',
             'p_id' => 'required|exists:professions,id',
             'telephone' => 'required',
 //           'ac_id' => 'required',
@@ -91,18 +92,24 @@ class WorkersController extends Controller
         }else{
             $image_treated =  $worker_to_modify->photo;
         }
-        $worker_to_modify->update([
-            'nom' => $fields['nom'],
-            'prenom' => $fields['prenom'],
-            'sexe' => $fields['sexe'],
-            'email' => $fields['email'],
-            'adresse' => $fields['adresse'],
+
+        if($fields['salaire_base'] > 999999999){
+            throw new Error('Le salaire ne doit pas depasser 999,999,999');
+        }else{
+            $worker_to_modify->update([
+                'nom' => $fields['nom'],
+                'prenom' => $fields['prenom'],
+                'sexe' => $fields['sexe'],
+                'email' => $fields['email'],
+                'adresse' => $fields['adresse'],
 //            'ac_id' => $ac_id,
-            'salaire_base' => $fields['salaire_base'],
-            'p_id' => $fields['p_id'],
-            'photo' => $image_treated,
-            'telephone' => $fields['telephone'],
-        ]);
+                'salaire_base' => $fields['salaire_base'],
+                'p_id' => $fields['p_id'],
+                'photo' => $image_treated,
+                'telephone' => $fields['telephone'],
+            ]);
+        }
+
         $w = Workers::with('profs', 'matiere')->findOrFail($id);
         $w_id = $w->id;
 

@@ -125,11 +125,13 @@ Route::get('flux', [DashboardController::class, 'getFlux'])->middleware('auth:sa
 Route::post('operation-plus',[DashboardController::class, 'plus'])->middleware('auth:sanctum');
 //INFORMATION CONCERNANT L'ECOLE
 Route::post('nif', [NifsController::class, 'create'])->middleware('auth:sanctum');
+Route::put('nif/{id}', [NifsController::class, 'updates'])->middleware('auth:sanctum');
 Route::get('nif-1', [NifsController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('nif/{id}', [NifsController::class, 'deletes'])->middleware('auth:sanctum');
 Route::get('identify-1', [IdentifysController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('identify/{id}', [IdentifysController::class, 'deletes'])->middleware('auth:sanctum');
 Route::post('identify', [IdentifysController::class, 'create'])->middleware('auth:sanctum');
+Route::put('identify/{id}', [IdentifysController::class, 'updates'])->middleware('auth:sanctum');
 
 //MATIERE
 
@@ -200,3 +202,6 @@ Route::get('audit-stats', [AuditsController::class, 'stats'] )->middleware('auth
 //pasmois
 
 Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois'] );
+
+//GENERATION NUMERO FACTURE
+Route::get('recue', [EtudiantsController::class, 'recue'] )->middleware('auth:sanctum');

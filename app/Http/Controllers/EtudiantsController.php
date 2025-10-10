@@ -6,11 +6,13 @@ use App\Models\Acs;
 use App\Models\Classes;
 use App\Models\Etudiants;
 
+use App\Models\Recues;
 use App\Models\Salles;
 use App\Models\Sousetudiants;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use function Illuminate\Events\queueable;
 
 
 class EtudiantsController extends Controller
@@ -348,4 +350,11 @@ public function suspendre($id, Request $request, AuditsController $audit){
                     'borderWidth' => 2]
             ]]);
     }
+
+    public function  recue(){
+        $time = time();
+        Recues::create(['num' => $time]);
+        return $time;
+    }
+
 }

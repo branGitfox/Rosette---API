@@ -185,15 +185,33 @@ class DashboardController extends Controller
     //DEPOT D'ARGENT
     public function plus(Request $request, EcolageController $ecolage, KermessesController $kermesse, DroitsController $droit, RevenusMoisController $revenusmois, AuditsController $audit){
         $ac_id = Acs::latest()->first()->id;
-        $ecolage->increment($ac_id, $request->ecolage);
-        $kermesse->increment($ac_id, $request->kermesse);
-        $droit->increment($ac_id, $request->droit);
-        $motif = $request->motif;
-        Ajouts::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
-        $revenusmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
-        $message = "Depot d'argent";
-        $audit->listen('Financier', $message, $request->user()->id);
-        return response()->json(['message' => 'Opération reussi']);
+        if($request->ecolage==0&&$request->kermesse==0&&$request->droit==0){
+            throw new Error("Au moins un different de 0");
+        }else{
+            $limit = 999999999;
+            if($request->ecolage > $limit){
+                throw new Error('Montant ne doit pas depasser 999999999');
+            }
+            if($request->kermesse > $limit){
+                throw new Error('Montant ne doit pas depasser 999999999');
+            }
+
+            if($request->droit > $limit){
+                throw new Error('Montant ne doit pas depasser 999999999');
+            }
+            $ecolage->increment($ac_id, $request->ecolage);
+            $kermesse->increment($ac_id, $request->kermesse);
+            $droit->increment($ac_id, $request->droit);
+
+
+            $motif = $request->motif;
+            Ajouts::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
+            $revenusmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
+            $message = "Depot d'argent";
+            $audit->listen('Financier', $message, $request->user()->id);
+            return response()->json(['message' => 'Opération reussi']);
+        }
+
     }
 
     //RETIRER DE L'ARGENT
@@ -214,15 +232,21 @@ class DashboardController extends Controller
         if($request->kermesse!= 0 &&$request->kermesse> $solde_kermesse){
             throw new Error('Solde de kermesse insuffisant');
         }
-        $ecolage->decrement($ac_id, $request->ecolage);
-        $kermesse->decrement($ac_id, $request->kermesse);
-        $droit->decrement($ac_id, $request->droit);
-        $motif = $request->motif;
-        Moins::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
-        $depensesmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
-        $message = "Retrait d'argent";
-        $audit->listen('Financier', $message, $request->user()->id);
-        return response()->json(['message' => 'Opération reussi']);
+
+        if($request->ecolage==0&&$request->kermesse==0&&$request->droit==0){
+            throw new Error("Au moins un different de 0");
+        }else{
+            $ecolage->decrement($ac_id, $request->ecolage);
+            $kermesse->decrement($ac_id, $request->kermesse);
+            $droit->decrement($ac_id, $request->droit);
+            $motif = $request->motif;
+            Moins::create(['motif' => $motif, 'ecolage' =>  $request->ecolage, 'droit' => $request->droit, 'kermesse' =>  $request->kermesse, 'ac_id' => $ac_id]);
+            $depensesmois->increment($ac_id, date('y-m-d'),($request->ecolage+$request->droit+$request->kermesse));
+            $message = "Retrait d'argent";
+            $audit->listen('Financier', $message, $request->user()->id);
+            return response()->json(['message' => 'Opération reussi']);
+        }
+
     }
 
     public function moins_list (){

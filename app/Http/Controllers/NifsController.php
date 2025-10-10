@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class NifsController extends Controller
 {
     //CREATION DE NIFS
-    public function create(Request $request){
+    public function create(Request $request, AuditsController $audit){
         $fields = $request->validate([
             'nif' => 'required',
         ]);
@@ -19,6 +19,8 @@ class NifsController extends Controller
              return throw new Error('Nif existente');
         }else{
             Nifs::create($fields);
+            $message = 'Creation du NIF';
+            $audit->listen('Paramètres', $message, $request->user()->id);
             return response()->json(['message' => 'Nif creé']);
         }
     }
@@ -31,5 +33,15 @@ class NifsController extends Controller
     public function deletes($id){
         Nifs::findOrFail($id)->delete();
         return response()->json(['message' => 'Nif supprimé']);
+    }
+
+    public function updates($id, Request $request, AuditsController $audit){
+        $fields = $request->validate([
+            'nif' => 'required',
+        ]);
+        Nifs::findOrFail($id)->update($fields);
+        $message = 'Modification du NIF';
+        $audit->listen('Paramètres', $message, $request->user()->id);
+        return response()->json(['message' => 'Nif modifié']);
     }
 }

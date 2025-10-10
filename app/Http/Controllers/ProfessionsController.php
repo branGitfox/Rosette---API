@@ -34,8 +34,9 @@ class ProfessionsController extends Controller
         $fields = $request->validate([
             'profession' => 'required',
         ]);
-        $message = 'Modification d\'une profession';
         Professions::findOrFail($id)->update($fields);
+        $message = 'Modification d\'une profession';
+
         $audit->listen('Paramètres', $message, $request->user()->id);
         return response()->json(['message' => 'profession modifiée']);
     }

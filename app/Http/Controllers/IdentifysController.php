@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class IdentifysController extends Controller
 {
     //CREATION DE NUMBERO D'IDENTIFICATION
-    public function create(Request $request){
+    public function create(Request $request, AuditsController $audit){
         $fields = $request->validate([
             'ident' => 'required',
         ]);
@@ -18,6 +18,8 @@ class IdentifysController extends Controller
             return throw new Error('Numero d\'identification existe Deja');
         }else{
             Identifys::create($fields);
+            $message = 'Creation du Stat';
+            $audit->listen('Paramètres', $message, $request->user()->id);
             return response()->json(['message' => 'Numero d\'identification creé']);
         }
     }
@@ -30,5 +32,15 @@ class IdentifysController extends Controller
 
     public function list(){
         return response()->json(Identifys::all());
+    }
+
+    public function updates($id, Request $request, AuditsController $audit){
+        $fields = $request->validate([
+            'ident' => 'required',
+        ]);
+            Identifys::findOrFail($id)->update($fields);
+        $message = 'Modification du Stat';
+        $audit->listen('Paramètres', $message, $request->user()->id);
+            return response()->json(['message' => 'Numero d\'identification modifié']);
     }
 }
