@@ -48,4 +48,26 @@ class AdmissionsController extends Controller
         return response()->json(['message' => 'Reglage supprimé']);
     }
 
+    public function updates($id, Request $request, AuditsController $audit){
+        $fields =$request->validate([
+            'note' => 'required|integer',
+            'ac_id' => 'required'
+        ],
+            [
+                'note.required' => 'Note est requis',
+                'note.integer' => 'Note doit etre un entier',
+                'ac_id.required' => 'Annee scolaire est requis',
+            ]);
+
+            $takeAcId = Acs::where('id',$fields['ac_id'])->first()->id;
+            Admissions::findOrFail($id)->update([
+                'note' => $fields['note'],
+                'ac_id' => $takeAcId,
+            ]);
+
+            $message = 'Modification d\'une Admission';
+            $audit->listen('Paramètres', $message, $request->user()->id);
+            return response()->json(['message' => 'Admission modifié']);
+
+    }
 }

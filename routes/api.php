@@ -59,6 +59,7 @@ Route::put('salle-update/{id}', [SallesController::class, 'updates'])->middlewar
 
 //ROUTE POUR REGLAGE D"ADMISSION
 Route::post('admission-creation', [AdmissionsController::class, 'create'])->middleware('auth:sanctum');
+Route::put('admission-update/{id}', [AdmissionsController::class, 'updates'])->middleware('auth:sanctum');
 Route::get('admission-list', [AdmissionsController::class, 'list']);
 Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete'])->middleware('auth:sanctum');
 //SOUSETUDIANTS
@@ -101,6 +102,7 @@ Route::put('worker-status/{id}', [WorkersController::class, 'status'])->middlewa
 
 //ROUTE POUR PROFESSION
 Route::post('profession-creation', [ProfessionsController::class, 'create'])->middleware('auth:sanctum');
+Route::put('profession-update/{id}', [ProfessionsController::class, 'updates'])->middleware('auth:sanctum');
 Route::get('profession-list', [ProfessionsController::class, 'list'])->middleware('auth:sanctum');
 Route::delete('profession/{id}', [ProfessionsController::class, 'deletes'])->middleware('auth:sanctum');
 
