@@ -22,6 +22,9 @@ use App\Http\Controllers\SallesController;
 use App\Http\Controllers\SousetudiantsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WorkersController;
+use App\Models\Acs;
+use App\Models\Classes;
+use App\Models\Salles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -205,3 +208,34 @@ Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois'] );
 
 //GENERATION NUMERO FACTURE
 Route::get('recue', [EtudiantsController::class, 'recue'] )->middleware('auth:sanctum');
+Route::get('transfert-data', function (){
+    $ac_id = \App\Models\Acs::latest()->first()->id;
+    if(!\App\Models\Classes::where('ac_id', $ac_id)->exists()){
+        $old = Acs::all()[Classes::all()->count() - 2]->id;
+        $classe_et_salle = Classes::with('salles')->where('ac_id', $old)->get();
+        foreach ($classe_et_salle as $classe){
+            Classes::create([
+                'ac_id' => $ac_id,
+                'nom_classe' => $classe->nom_classe,
+                'ecolage' => $classe->ecolage,
+                'droit' => $classe->droit,
+                'kermesse' => $classe->kermesse,
+            ]);
+            $last_classe = Classes::latest()->first()->id;
+            foreach ($classe->salles as $salle){
+                Salles::create([
+                    'ac_id' => $ac_id,
+                    'cl_id' => $last_classe,
+                    'nom_salle' => $salle->nom_salle,
+                    'effectif' => $salle->effectif,
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Transfert terminé']);
+
+
+    }else{
+        throw new Error('Impossible de faire le transfert');
+    }
+});

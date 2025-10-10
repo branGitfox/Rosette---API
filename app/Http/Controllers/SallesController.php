@@ -65,12 +65,12 @@ class SallesController extends Controller
     Public function list_year($id){
         if($id == 0){
             $ac_id = DB::table('acs')->latest()->first()->id;
-
+            return response()->json(Salles::where('ac_id', $ac_id)->orderBy('created_at', 'desc')->get());
         }else{
             $ac_id = $id;
+            return response()->json(Salles::where('cl_id', $ac_id)->orderBy('created_at', 'desc')->get());
         }
 
-        return response()->json(Salles::where('ac_id', $ac_id)->orderBy('created_at', 'desc')->get());
     }
 
     public function updates($id, Request $request, AuditsController $audit){
