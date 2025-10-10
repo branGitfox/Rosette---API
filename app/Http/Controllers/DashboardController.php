@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Acs;
+use App\Models\Classes;
 use App\Models\Depensesparmois;
 use App\Models\Droits;
 use App\Models\Ecolages;
@@ -266,5 +267,10 @@ class DashboardController extends Controller
         }
 
         return response()->json($list);
+    }
+
+    public function infra(){
+        $ac_id = Acs::latest()->first()->id;
+        return response()->json(Classes::with(['salles' => fn($q) => $q->with('eleves')])->where('ac_id',$ac_id)->get());
     }
 }

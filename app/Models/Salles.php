@@ -16,4 +16,8 @@ class Salles extends Model
     public function classes(){
         return $this->belongsTo(Classes::class, 'cl_id', 'id');
     }
+
+    public function eleves (){
+        return $this->hasMany(Sousetudiants::class, 'sa_id', 'id');
+    }
 }

@@ -18,4 +18,8 @@ class Classes extends Model
     public function acs() {
         return $this->belongsTo('App\Models\Acs', 'ac_id', 'id');
     }
+
+    public function salles(){
+        return $this->hasMany(Salles::class, 'cl_id', 'id');
+    }
 }
