@@ -208,11 +208,11 @@ Route::get('audit-stats', [AuditsController::class, 'stats'] )->middleware('auth
 Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois'] );
 
 //GENERATION NUMERO FACTURE
-Route::get('recue', [EtudiantsController::class, 'recue'] )->middleware('auth:sanctum');
+Route::get('recue', [EtudiantsController::class, 'recue'])->middleware('auth:sanctum');
 Route::get('transfert-data', function (){
     $ac_id = \App\Models\Acs::latest()->first()->id;
     if(!\App\Models\Classes::where('ac_id', $ac_id)->exists()){
-        $old = Acs::all()[Classes::all()->count() - 2]->id;
+        $old = Acs::all()[Acs::all()->count() - 2]->id;
         $classe_et_salle = Classes::with('salles')->where('ac_id', $old)->get();
         foreach ($classe_et_salle as $classe){
             Classes::create([
