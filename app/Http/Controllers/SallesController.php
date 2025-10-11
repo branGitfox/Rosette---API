@@ -47,7 +47,7 @@ class SallesController extends Controller
 
     //RECUPERATION HISTORIQUE
     public function list(){
-        return response()->json(Salles::with('classes')->get());
+        return response()->json(Salles::where('ac_id', Acs::latest()->first()->id)->with('classes')->get());
     }
 
 

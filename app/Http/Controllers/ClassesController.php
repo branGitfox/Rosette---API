@@ -55,7 +55,11 @@ class ClassesController extends Controller
     //RECUPERATION HISTORIQUE
 
     public function list() {
-        return response()->json(Classes::with('acs')->get());
+        return response()->json(Classes::where('ac_id', Acs::latest()->first()->id)->with('acs')->get());
+    }
+
+    public function list_salle() {
+        return response()->json(Classes::where('ac_id', Acs::latest()->first()->id)->get());
     }
 
     //RECUPERATION CLASSE PAR ANNEE
@@ -63,7 +67,6 @@ class ClassesController extends Controller
     Public function list_year($id){
         if($id == 0){
             $ac_id = DB::table('acs')->latest()->first()->id;
-
         }else{
             $ac_id = $id;
         }

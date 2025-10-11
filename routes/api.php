@@ -48,6 +48,7 @@ Route::delete('/ac-delete/{id}', [AcController::class, 'delete'])->middleware('a
 //ROUTE POUR CLASSES
 Route::post('/classe-creation', [ClassesController::class, 'create'])->middleware('auth:sanctum');
 Route::get('/classe-list', [ClassesController::class, 'list'])->middleware('auth:sanctum');
+Route::get('/classe-list-salle', [ClassesController::class, 'list_salle'])->middleware('auth:sanctum');
 Route::get('/classe-list_year/{id}', [ClassesController::class, 'list_year'])->middleware('auth:sanctum');
 Route::delete('/classe-delete/{id}', [ClassesController::class, 'delete'])->middleware('auth:sanctum');
 Route::put('classe-update/{id}', [ClassesController::class, 'updates'])->middleware('auth:sanctum');
