@@ -222,7 +222,7 @@ Route::get('transfert-data', function (){
                 'droit' => $classe->droit,
                 'kermesse' => $classe->kermesse,
             ]);
-            $last_classe = Classes::latest()->first()->id;
+            $last_classe = Classes::where('ac_id', $ac_id)->latest()->first()->id;
             foreach ($classe->salles as $salle){
                 Salles::create([
                     'ac_id' => $ac_id,
