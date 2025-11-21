@@ -19,6 +19,7 @@ use App\Http\Controllers\NifsController;
 use App\Http\Controllers\ProfessionsController;
 use App\Http\Controllers\RevenusMoisController;
 use App\Http\Controllers\SallesController;
+use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\SousetudiantsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WorkersController;
@@ -225,6 +226,7 @@ Route::get('transfert-data', function (){
 
             foreach ($classe->salles as $salle){
                 $last_classe = Classes::where('ac_id', $ac_id)->latest()->first()->id;
+                sleep(2);
                 Salles::create([
                     'ac_id' => $ac_id,
                     'cl_id' => $last_classe,
@@ -241,3 +243,6 @@ Route::get('transfert-data', function (){
         throw new Error('Impossible de faire le transfert');
     }
 });
+
+
+Route::post('/school', [SchoolController::class, 'create'] )->middleware('auth:sanctum');
