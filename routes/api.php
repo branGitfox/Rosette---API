@@ -127,7 +127,7 @@ Route::post('depense', [DepensesMoisController::class, 'create'])->middleware('a
 //DASHBOARD
 Route::get('databar', [DashboardController::class, 'getBarData'])->middleware('auth:sanctum');
 Route::get('flux', [DashboardController::class, 'getFlux'])->middleware('auth:sanctum');
-Route::post('operation-plus',[DashboardController::class, 'plus'])->middleware('auth:sanctum');
+Route::post('operation-plus', [DashboardController::class, 'plus'])->middleware('auth:sanctum');
 //INFORMATION CONCERNANT L'ECOLE
 Route::post('nif', [NifsController::class, 'create'])->middleware('auth:sanctum');
 Route::put('nif/{id}', [NifsController::class, 'updates'])->middleware('auth:sanctum');
@@ -171,14 +171,14 @@ Route::get('nif', function () {
     return \App\Models\Nifs::latest()->first()->nif;
 });
 
-Route::get('logout', function(Request $request) {
+Route::get('logout', function (Request $request) {
     $request->user()->tokens()->delete();
     return response()->json(['message' => 'Vous etes deconnecté']);
 })->middleware('auth:sanctum');
 
 
-Route::get('/user-auto', function() {
-    if(!\App\Models\User::where('email', 'rosette@gmail.com')->exists()){
+Route::get('/user-auto', function () {
+    if (!\App\Models\User::where('email', 'rosette@gmail.com')->exists()) {
         \App\Models\User::create([
             'email' => 'rosette@gmail.com',
             'role' => 'directeur',
@@ -195,27 +195,27 @@ Route::get('/user-auto', function() {
 //OPERATION
 Route::post('op-plus', [DashboardController::class, 'plus'])->middleware('auth:sanctum');
 Route::post('op-moins', [DashboardController::class, 'moins'])->middleware('auth:sanctum');
-Route::get('moins-list', [DashboardController::class,'moins_list'] )->middleware('auth:sanctum');
-Route::get('plus-list', [DashboardController::class,'plus_list'] )->middleware('auth:sanctum');
+Route::get('moins-list', [DashboardController::class,'moins_list'])->middleware('auth:sanctum');
+Route::get('plus-list', [DashboardController::class,'plus_list'])->middleware('auth:sanctum');
 Route::get('infra', [DashboardController::class,'infra'])->middleware('auth:sanctum');
 //AUDITION
 
-Route::get('audit', [AuditsController::class, 'list'] )->middleware('auth:sanctum');
-Route::post('audit-del', [AuditsController::class, 'deletes'] )->middleware('auth:sanctum');
-Route::get('audit-stats', [AuditsController::class, 'stats'] )->middleware('auth:sanctum');
+Route::get('audit', [AuditsController::class, 'list'])->middleware('auth:sanctum');
+Route::post('audit-del', [AuditsController::class, 'deletes'])->middleware('auth:sanctum');
+Route::get('audit-stats', [AuditsController::class, 'stats'])->middleware('auth:sanctum');
 
 //pasmois
 
-Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois'] );
+Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois']);
 
 //GENERATION NUMERO FACTURE
 Route::get('recue', [EtudiantsController::class, 'recue'])->middleware('auth:sanctum');
-Route::get('transfert-data', function (){
+Route::get('transfert-data', function () {
     $ac_id = \App\Models\Acs::latest()->first()->id;
-    if(!\App\Models\Classes::where('ac_id', $ac_id)->exists()){
+    if (!\App\Models\Classes::where('ac_id', $ac_id)->exists()) {
         $old = Acs::all()[Acs::all()->count() - 2]->id;
         $classe_et_salle = Classes::with('salles')->where('ac_id', $old)->get();
-        foreach ($classe_et_salle as $classe){
+        foreach ($classe_et_salle as $classe) {
             Classes::create([
                 'ac_id' => $ac_id,
                 'nom_classe' => $classe->nom_classe,
@@ -224,7 +224,7 @@ Route::get('transfert-data', function (){
                 'kermesse' => $classe->kermesse,
             ]);
 
-            foreach ($classe->salles as $salle){
+            foreach ($classe->salles as $salle) {
                 $last_classe = Classes::where('ac_id', $ac_id)->latest()->first()->id;
                 sleep(2);
                 Salles::create([
@@ -239,10 +239,13 @@ Route::get('transfert-data', function (){
         return response()->json(['message' => 'Transfert terminé']);
 
 
-    }else{
+    } else {
         throw new Error('Impossible de faire le transfert');
     }
 });
 
 
-Route::post('/school', [SchoolController::class, 'create'] )->middleware('auth:sanctum');
+Route::post('/school', [SchoolController::class, 'create'])->middleware('auth:sanctum');
+Route::get('/school' ,[SchoolController::class, 'show'])->middleware('auth:sanctum');
+Route::delete('/school/{school}', [SchoolController::class, 'destroy'])->middleware('auth:sanctum');
+Route::put('/school/{school}', [SchoolController::class, 'edit'])->middleware('auth:sanctum');
