@@ -249,3 +249,6 @@ Route::post('/school', [SchoolController::class, 'create'])->middleware('auth:sa
 Route::get('/school' ,[SchoolController::class, 'show'])->middleware('auth:sanctum');
 Route::delete('/school/{school}', [SchoolController::class, 'destroy'])->middleware('auth:sanctum');
 Route::put('/school/{school}', [SchoolController::class, 'edit'])->middleware('auth:sanctum');
+//Route::get('roles', function (){
+//   return \App\Models\Pages::with('roles')->get();
+//});

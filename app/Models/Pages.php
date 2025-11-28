@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Pages extends Model
+{
+    use HasFactory;
+    protected $table = 'pages';
+    protected $fillable = ['page_name'];
+
+
+    public function roles(){
+        return $this->belongsToMany(Roles::class, 'roles_pages', 'role_id', 'page_id');
+    }
+}
