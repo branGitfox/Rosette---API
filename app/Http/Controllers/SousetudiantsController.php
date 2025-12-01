@@ -30,7 +30,16 @@ class SousetudiantsController extends Controller
 
     public function update_note($id, Request $request, AuditsController $audit){
 //        return ['message' => $request->noteTotal];
-       Sousetudiants::findOrFail($id)->update(['note1' => $request->note1==0?0:$request->note1, 'note2' => $request->note2==0?0:$request->note2, 'note3' => $request->note3==0?0:$request->note3, 'noteTotal' => $request->noteTotal==0?0:$request->noteTotal]);
+        $note1=$request->note1;
+        $note2=$request->note2;
+        $note3=$request->note3;
+        if($note1 !=0&&$note2 !=0&&$note3 !=0){
+            $noteTotal = ($note1+$note2+$note3) / 3;
+        }else{
+            $noteTotal = 0;
+        }
+
+       Sousetudiants::findOrFail($id)->update(['note1' => $note1==0?0:$note1, 'note2' => $note2==0?0:$note2, 'note3' => $note3==0?0:$note3, 'noteTotal' => $noteTotal]);
         $sous_etudiant_updateed = Sousetudiants::findOrFail($id);
 
         $moyenne_admission = Admissions::where('ac_id', $sous_etudiant_updateed->ac_id)->first();
