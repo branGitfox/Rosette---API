@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->string('prenom');
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->boolean('sexe');
             $table->string('adresse');
             $table->integer('salaire_base');
