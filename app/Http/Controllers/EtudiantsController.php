@@ -192,6 +192,7 @@ class EtudiantsController extends Controller
             'cl_id' => 'required',
             'sa_id' =>'required',
 
+
         ], [
             'nom.required' => 'Le nom est obligatoire.',
             'prenom.required' => 'Le prénom est obligatoire.',
