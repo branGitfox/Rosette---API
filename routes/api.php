@@ -71,6 +71,7 @@ Route::delete('admission-delete/{id}', [AdmissionsController::class, 'delete'])-
 Route::put('etudiant-note/{id}', [SousetudiantsController::class, 'update_note'])->middleware('auth:sanctum');
 Route::post('etudiant-recreation', [EtudiantsController::class, 'reinscriptions'])->middleware('auth:sanctum');
 Route::put('etudiant-suspendre/{id}', [EtudiantsController::class, 'suspendre'])->middleware('auth:sanctum');
+Route::put('etudiant-desuspendre/{id}', [EtudiantsController::class, 'unsuspend'])->middleware('auth:sanctum');
 
 //ROUTE POUR ETUDIANTs
 Route::post('etudiant-creation', [EtudiantsController::class, 'inscription'])->middleware('auth:sanctum');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Acs;
+use App\Models\Admissions;
 use App\Models\Classes;
 use App\Models\Etudiants;
 
@@ -302,12 +303,26 @@ public function deletes($id, Request $request, AuditsController $audit) {
 //SUSPENDRE UN ELEVE
 
 public function suspendre($id, Request $request, AuditsController $audit){
-      Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => 'suspendu', 'transfert' => true]);
+      Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => 'suspendu']);
     $message = 'Suspendre un etudiant';
     $audit->listen('Étudiants', $message, $request->user()->id);
       return response()->json(['message' => 'Etudiant suspendu']);
 }
 
+public function unsuspend($id, Request $request, AuditsController $audit){
+    $sous_etudiant = Sousetudiants::where('et_id', $id)->latest()->first();
+    $totalMarks = $sous_etudiant->noteTotal;
+    $moyenne_admission = Admissions::where('ac_id', $sous_etudiant->ac_id)->first();
+    if($totalMarks >= $moyenne_admission->note){
+        $status = 'admis';
+    }else{
+        $status = 'redoublé';
+    }
+    $message = 'Lever la suspension d\'un etudiant';
+    $audit->listen('Étudiants', $message, $request->user()->id);
+    Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => $status]);
+    return response()->json(['message' => 'Suspension Levé']);
+}
 
 
     //RECUPERATION DE LA LISTE D'ETUDIANT PAGE GESTION ECOLAGE
