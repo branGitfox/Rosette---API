@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sousetudiants', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('cl_id');
-            $table->unsignedBigInteger('sa_id');
+            $table->unsignedBigInteger('sa_id')->nullable();
             $table->unsignedBigInteger('ac_id');
             $table->unsignedBigInteger('et_id');
             $table->foreign('cl_id')->references('id')->on('classes')->cascadeOnDelete();

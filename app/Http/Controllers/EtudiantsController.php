@@ -55,7 +55,7 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
-        if(Sousetudiants::where('sa_id', $fields['sa_id'])->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
+        if($fields['sa_id'] != 0&&Sousetudiants::where('sa_id', $fields['sa_id'])->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
             throw new \Error('La salle a atteint son effectif');
         }else{
             if($request->file('photo') !== NULL){
@@ -206,7 +206,7 @@ class EtudiantsController extends Controller
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
 
-        if(Sousetudiants::where('sa_id', $fields['sa_id'])->where('et_id', '!=', $request->id)->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
+        if($fields['sa_id'] && Sousetudiants::where('sa_id', $fields['sa_id'])->where('et_id', '!=', $request->id)->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
             throw new \Error('La salle a atteint son effectif');
         }else {
             $etudiant = Etudiants::findOrFail($id);
@@ -240,7 +240,7 @@ class EtudiantsController extends Controller
                 'telephoneTuteur' => $fields['telephoneTuteur'],
             ]);
             $sous_et = Sousetudiants::where('et_id', $request->id)->latest()->first()->id;
-            $sousetudiants->update($sous_et, ['cl_id' => $request->cl_id, 'sa_id' => $request->sa_id]);
+            $sousetudiants->update($sous_et, ['cl_id' => $request->cl_id, 'sa_id' => $request->sa_id==0?null:$request->sa_id]);
             $message = 'Modification d\'un etudiant';
             $audit->listen('Étudiants', $message, $request->user()->id);
             return response()->json(['message' => 'Etudiant modifie']);

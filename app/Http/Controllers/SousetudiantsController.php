@@ -12,7 +12,7 @@ class SousetudiantsController extends Controller
 
     public function create($sa_id, $ac_id,$cl_id,$et_id, $note1,$note2,$note3){
         Sousetudiants::create([
-            'sa_id' => $sa_id,
+            'sa_id' => $sa_id==0?null:$sa_id,
             'ac_id' => $ac_id,
             'cl_id' => $cl_id,
             'note1' => $note1,
