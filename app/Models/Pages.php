@@ -9,7 +9,7 @@ class Pages extends Model
 {
     use HasFactory;
     protected $table = 'pages';
-    protected $fillable = ['page_name'];
+    protected $fillable = ['page_name', 'page_path'];
 
 
     public function roles(){

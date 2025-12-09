@@ -16,8 +16,10 @@ use App\Http\Controllers\KermessesController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\MoisecolageController;
 use App\Http\Controllers\NifsController;
+use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfessionsController;
 use App\Http\Controllers\RevenusMoisController;
+use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SallesController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\SousetudiantsController;
@@ -253,3 +255,15 @@ Route::put('/school/{school}', [SchoolController::class, 'edit'])->middleware('a
 //Route::get('roles', function (){
 //   return \App\Models\Pages::with('roles')->get();
 //});
+
+
+Route::get('/pages', [PagesController::class, 'getPages'])->middleware('auth:sanctum');
+Route::post('/pages', [PagesController::class, 'create'])->middleware('auth:sanctum');
+Route::put('/pages/{page}', [PagesController::class, 'edit'])->middleware('auth:sanctum');
+Route::delete('/pages/{page}', [PagesController::class, 'destroy'])->middleware('auth:sanctum');
+
+
+Route::get('/roles', [RolesController::class, 'getRoles'])->middleware('auth:sanctum');
+Route::post('/roles', [RolesController::class, 'create'])->middleware('auth:sanctum');
+Route::put('/roles/{role}', [RolesController::class, 'edit'])->middleware('auth:sanctum');
+Route::delete('/roles/{role}', [RolesController::class, 'destroy'])->middleware('auth:sanctum');

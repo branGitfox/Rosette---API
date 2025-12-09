@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pages', function (Blueprint $table) {
                 $table->id();
                 $table->string('page_name');
+                $table->string('page_path');
 //                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
 
                 $table->timestamps();

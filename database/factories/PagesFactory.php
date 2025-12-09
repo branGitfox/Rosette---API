@@ -17,7 +17,8 @@ class PagesFactory extends Factory
     public function definition(): array
     {
         return [
-            'page_name' => fake()->name()
+            'page_name' => fake()->name(),
+            'page_path' => fake()->url(),
         ];
     }
 }
