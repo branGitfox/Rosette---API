@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class SousetudiantsController extends Controller
 {
-    //Cration SOUS ETUDIANT
+    //Cration SOUS ETUDIANT (QUELQUES MODIFICATION DEPUIS)
 
     public function create($sa_id, $ac_id,$cl_id,$et_id, $note1,$note2,$note3){
         Sousetudiants::create([
