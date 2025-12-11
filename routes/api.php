@@ -265,5 +265,6 @@ Route::delete('/pages/{page}', [PagesController::class, 'destroy'])->middleware(
 
 Route::get('/roles', [RolesController::class, 'getRoles'])->middleware('auth:sanctum');
 Route::post('/roles', [RolesController::class, 'create'])->middleware('auth:sanctum');
-Route::put('/roles/{role}', [RolesController::class, 'edit'])->middleware('auth:sanctum');
+Route::put('/roles/{roles}', [RolesController::class, 'edit'])->middleware('auth:sanctum');
 Route::delete('/roles/{role}', [RolesController::class, 'destroy'])->middleware('auth:sanctum');
+Route::get('/roles/{roles}', [RolesController::class, 'show']);

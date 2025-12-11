@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Roles;
+use App\Models\Rolespages;
 use Illuminate\Http\Request;
 
 class RolesController extends Controller
@@ -11,13 +12,16 @@ class RolesController extends Controller
     public function create(Request $request){
 
         $validated = $request->validate([
-            'role_name' => 'required',
+            'role_name' => 'required|unique:roles',
+            'pages' => 'required',
         ],
             ['role_name.required' => "Le nom du role est obligatoire"]
         );
 
         $role = Roles::create($validated);
-
+        foreach($request->pages as $page){
+            Rolespages::create(['role_id' => $role->id, 'page_id' => $page]);
+        }
         return response()->json(['message' => 'Role creée']);
     }
 
@@ -25,8 +29,13 @@ class RolesController extends Controller
 
         $validated = $request->validate([
             'role_name' => 'required',
+            'pages' => 'required',
         ],
             ['role_name.required' => "Le nom du role est obligatoire"]);
+        Rolespages::where('role_id', $roles->id)->delete();
+        foreach($request->pages as $page){
+            Rolespages::create(['role_id' => $roles->id, 'page_id' => $page]);
+        }
         $roles->update($validated);
 
         return response()->json(['message' => 'Role modifié']);
@@ -39,6 +48,12 @@ class RolesController extends Controller
     }
 
     public function getRoles(){
-        return response()->json(Roles::all());
+        return response()->json(Roles::with('pages')->get());
+    }
+
+    public function show(Roles $roles){
+        $role = $roles->load('pages');
+
+        return response()->json($role->pages->pluck('id'));
     }
 }
