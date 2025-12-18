@@ -32,7 +32,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
-    return $request->user();
+    return $request->user()->load(['roles' => fn($q) => $q->with('pages')]);
 })->middleware('auth:sanctum');
 
 
@@ -184,7 +184,7 @@ Route::get('/user-auto', function () {
     if (!\App\Models\User::where('email', 'rosette@gmail.com')->exists()) {
         \App\Models\User::create([
             'email' => 'rosette@gmail.com',
-            'role' => 'directeur',
+            'role_id' => 1,
             'password' => 'rosette2025',
             'name' => 'Rosette',
             'firstname' => 'Rosette',

@@ -20,7 +20,7 @@ POUR LA CREATION D'UN UTILISATEUR
             'firstname' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|confirmed',
-            'role' => 'required',
+            'role_id' => 'required',
         ], [
             'name.required' => 'Le nom est obligatoire',
             'firstname.required' => 'Le prenom est obligatoire',
