@@ -102,20 +102,20 @@ class EtudiantsController extends Controller
             $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,0, 0, 0);
 
             $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
-            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
-            $droit->increment($ac_id, $montant_droit);
-            $kermesse->increment($ac_id, $montant_kermesse);
+//            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
+//            $droit->increment($ac_id, $montant_droit);
+//            $kermesse->increment($ac_id, $montant_kermesse);
             $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
             foreach($mois_list->mois as  $m){
-                if($debut_mois === $m->mois){
-                    $payé = true;
-                    $revenusmois->increment($ac_id,$m->mois, ($montant_ecolage / ($enfant_prof==1?2:1))+$montant_droit+$montant_kermesse);
-                }else{
-                    $payé = false;
-                }
+//                if($debut_mois === $m->mois){
+//                    $payé = true;
+//                    $revenusmois->increment($ac_id,$m->mois, ($montant_ecolage / ($enfant_prof==1?2:1))+$montant_droit+$montant_kermesse);
+//                }else{
+//                    $payé = false;
+//                }
 
-                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false);
             }
 
 
@@ -277,21 +277,21 @@ public function deletes($id, Request $request, AuditsController $audit) {
          $montant_droit = DB::table('classes')->latest()->first()->droit;
          $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
          $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
-         $ecolage->increment($ac_id, $ecolage_devide);
-         $droit->increment($ac_id, $montant_droit);
-         $kermesse->increment($ac_id, $montant_kermesse);
+//         $ecolage->increment($ac_id, $ecolage_devide);
+//         $droit->increment($ac_id, $montant_droit);
+//         $kermesse->increment($ac_id, $montant_kermesse);
 
          $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
          foreach ($mois_list->mois as $m) {
-             if ($debut_mois === $m->mois) {
-                 $revenusmois->increment($ac_id,$m->mois, $ecolage_devide+$montant_droit+$montant_kermesse);
-                 $payé = true;
-             } else {
-                 $payé = false;
-             }
+//             if ($debut_mois === $m->mois) {
+////                 $revenusmois->increment($ac_id,$m->mois, $ecolage_devide+$montant_droit+$montant_kermesse);
+//                 $payé = true;
+//             } else {
+////                 $payé = false;
+//             }
 
-             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, $payé);
+             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false);
          }
 
          $sousetudiant->update(['transfert' => true]);
