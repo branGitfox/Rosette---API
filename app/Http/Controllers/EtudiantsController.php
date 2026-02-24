@@ -304,10 +304,10 @@ public function deletes($id, Request $request, AuditsController $audit) {
 //SUSPENDRE UN ELEVE
 
 public function suspendre($id, Request $request, AuditsController $audit){
-      Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => 'suspendu']);
+        Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => 'suspendu']);
     $message = 'Suspendre un etudiant';
     $audit->listen('Étudiants', $message, $request->user()->id);
-      return response()->json(['message' => 'Etudiant suspendu']);
+    return response()->json(['message' => 'Etudiant suspendu']);
 }
 
 public function unsuspend($id, Request $request, AuditsController $audit){
@@ -373,4 +373,11 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         return $time;
     }
 
+    public function quit($id, Request $request, AuditsController $audit){
+        $student = Etudiants::where('id', $id)->first();
+        $student->update(['quit' => 1, 'quit_at'=> now()]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." comme quitté";
+        $audit->listen('Etudiants', $message, $request->user()->id);
+        return \response()->json(['message' => "Eleve quitté"]);
+    }
 }

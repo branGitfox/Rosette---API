@@ -84,6 +84,7 @@ Route::get('etudiant/{id}', [EtudiantsController::class, 'etudiant'])->middlewar
 Route::post('etudiant/{id}', [EtudiantsController::class, 'updates'])->middleware('auth:sanctum');
 Route::delete('etudiant/{id}', [EtudiantsController::class, 'deletes']);
 Route::get('etudiant-list_ecolage', [EtudiantsController::class, 'list_ecolage'])->middleware('auth:sanctum');
+Route::put('etudiant-quit/{id}', [EtudiantsController::class, 'quit'])->middleware('auth:sanctum');
 // ROUTE POUR MOIS ECOLAGE
 Route::get('mac-list_year/{id}', [MacController::class, 'list_year'])->middleware('auth:sanctum');
 Route::get('etudiant-count', [EtudiantsController::class, 'count'])->middleware('auth:sanctum');
