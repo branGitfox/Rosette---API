@@ -202,6 +202,7 @@ Route::post('op-moins', [DashboardController::class, 'moins'])->middleware('auth
 Route::get('moins-list', [DashboardController::class,'moins_list'])->middleware('auth:sanctum');
 Route::get('plus-list', [DashboardController::class,'plus_list'])->middleware('auth:sanctum');
 Route::get('infra', [DashboardController::class,'infra'])->middleware('auth:sanctum');
+Route::get('tradingchart', [DashboardController::class,'tradingChartforDebitandCredit'])->middleware('auth:sanctum');
 //AUDITION
 
 Route::get('audit', [AuditsController::class, 'list'])->middleware('auth:sanctum');

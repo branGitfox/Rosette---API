@@ -297,4 +297,21 @@ class DashboardController extends Controller
         $ac_id = Acs::latest()->first()->id;
         return response()->json(Classes::with(['salles' => fn($q) => $q->with('eleves')])->where('ac_id',$ac_id)->get());
     }
+
+
+    public function tradingChartforDebitandCredit(){
+
+        $month = ['no','Jan','Fév','Mar', 'Avr', 'Mai','Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        $dataset = [];
+        for($i=1; $i<13; $i++){
+           $dep =  Depensesparmois::where('mois','like', date('y-').($i<10?'0':'').$i."-%")->first();
+            $depenses = $dep ? $dep->solde : 0;
+            $rev =  Revenusparmois::where('mois','like', date('y-').($i<10?'0':'').$i."-%")->first();
+            $revenus = $rev ? $rev->solde : 0;
+            array_push($dataset, ['month' => $month[$i], 'debit' => $revenus, 'credit' => $depenses]);
+        }
+
+        return response()->json($dataset);
+
+    }
 }
