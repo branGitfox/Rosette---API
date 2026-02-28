@@ -177,7 +177,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'debit' => $last_debit->solde??0,
-            'credit' => $last_credit->solde,
+            'credit' => $last_credit->solde??0,
         ]);
 
     }

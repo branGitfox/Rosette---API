@@ -9,9 +9,9 @@ class DepensesMoisController extends Controller
 {
     public function increment($ac_id, $mois,  $depense){
 
-        if(Depensesparmois::where('ac_id', $ac_id)->where('mois', $mois)->exists()){
-            $last_solde = Depensesparmois::where('ac_id', $ac_id)->where('mois', $mois)->first()->solde;
-            Depensesparmois::where('ac_id', $ac_id)->where('mois', $mois)->update([
+        if(Depensesparmois::where('ac_id', $ac_id)->where('mois', 'like', substr($mois, 0,5).'-%')->exists()){
+            $last_solde = Depensesparmois::where('ac_id', $ac_id)->where('mois','like', substr($mois, 0,5).'-%')->first()->solde;
+            Depensesparmois::where('ac_id', $ac_id)->where('mois','like', substr($mois, 0,5).'-%')->update([
                 'solde' => $last_solde + $depense
             ]);
         }else{

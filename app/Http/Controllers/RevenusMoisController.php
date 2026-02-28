@@ -10,9 +10,9 @@ class RevenusMoisController extends Controller
     //
     public function increment($ac_id,$mois,  $revenus){
 
-        if(Revenusparmois::where('ac_id', $ac_id)->where('mois', $mois)->exists()){
-            $last_solde = Revenusparmois::where('ac_id', $ac_id)->where('mois', $mois)->first()->solde;
-            Revenusparmois::where('ac_id', $ac_id)->where('mois', $mois)->update([
+        if(Revenusparmois::where('ac_id', $ac_id)->where('mois', 'like', substr($mois, 0,5).'-%')->exists()){
+            $last_solde = Revenusparmois::where('ac_id', $ac_id)->where('mois', 'like', substr($mois, 0,5).'-%')->first()->solde;
+            Revenusparmois::where('ac_id', $ac_id)->where('mois', 'like', substr($mois, 0,5).'-%')->update([
                 'solde' => $last_solde + $revenus
             ]);
         }else{
