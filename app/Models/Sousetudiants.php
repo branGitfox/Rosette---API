@@ -34,6 +34,9 @@ class Sousetudiants extends Model
         return $this->hasMany(Moisecolage::class, 'et_id', 'id');
     }
 
+    public function student(){
+        return $this->belongsTo(Etudiants::class, 'et_id', 'id');
+    }
 
 
 }

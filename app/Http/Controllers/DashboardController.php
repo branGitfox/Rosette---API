@@ -355,4 +355,79 @@ class DashboardController extends Controller
         return response()->json(['labels'=> $labels,'datasets'=>[['label' => 'Moyenne Générale (%)' , 'data' => $data,'backgroundColor'=>'#7c3aed']]]);
     }
 
+    public function major(Request $request){
+        $query = $request->query('nbr');
+        $salles = Salles::where('ac_id', Acs::latest()->first()->id)->with(['eleves' => fn($q) => $q->with('student') ])->get();
+        $dataset = [];
+
+        foreach($salles as $s){
+            $max=0;
+            $eleves = [];
+            $label=null;
+            foreach ($s->eleves as $e){
+                if($query=='last'){
+                    if($e->noteTotal != 0){
+                        if ($max < $e->noteTotal){
+                            $max = $e->noteTotal;
+                            $eleves = $e;
+                            $label=4;
+                        }
+                    }else{
+                        if ($e->note3 != 0){
+                            if ($max < $e->note3){
+                                $max = $e->note3;
+                                $eleves = $e;
+                                $label=3;
+                            }
+                        }elseif($e->note2 !=0){
+                            if ($max < $e->note2){
+                                $max = $e->note2;
+                                $eleves = $e;
+                                $label=2;
+                            }
+                        }else{
+                            if ($max < $e->note1){
+                                $max = $e->note1;
+                                $label=1;
+                                $eleves = $e;
+                            }
+                        }
+                    }
+                }else{
+                    if($query==1){
+                        if ($max < $e->note1){
+                            $max = $e->note1;
+                            $label=1;
+                            $eleves = $e;
+                        }
+                    }elseif($query ==2){
+                        if ($max < $e->note2){
+                            $max = $e->note2;
+                            $eleves = $e;
+                            $label=2;
+                        }
+                    }elseif($query ==3){
+                        if ($max < $e->note3){
+                            $max = $e->note3;
+                            $eleves = $e;
+                            $label=3;
+                        }
+                    }else{
+                        if ($max < $e->noteTotal){
+                            $max = $e->noteTotal;
+                            $eleves = $e;
+                            $label=4;
+                        }
+                    }
+                }
+
+
+            }
+            array_push($dataset,['classe'=> $s->nom_salle, 'nom' => $eleves->student->nom, 'moyenne' => $label==4?$eleves->noteTotal:($label==3?$eleves->note3:($label==2?$eleves->note2:$eleves->note1))]);
+        }
+
+        return response()->json($dataset);
+    }
+
+
 }
