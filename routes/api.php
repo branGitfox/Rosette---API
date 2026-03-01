@@ -132,6 +132,7 @@ Route::post('depense', [DepensesMoisController::class, 'create'])->middleware('a
 Route::get('databar', [DashboardController::class, 'getBarData'])->middleware('auth:sanctum');
 Route::get('flux', [DashboardController::class, 'getFlux'])->middleware('auth:sanctum');
 Route::post('operation-plus', [DashboardController::class, 'plus'])->middleware('auth:sanctum');
+Route::get('performance', [DashboardController::class, 'performance'])->middleware('auth:sanctum');
 //INFORMATION CONCERNANT L'ECOLE
 Route::post('nif', [NifsController::class, 'create'])->middleware('auth:sanctum');
 Route::put('nif/{id}', [NifsController::class, 'updates'])->middleware('auth:sanctum');

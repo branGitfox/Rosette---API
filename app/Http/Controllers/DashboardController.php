@@ -11,8 +11,10 @@ use App\Models\Kermesses;
 use App\Models\Moins;
 use App\Models\Ajouts;
 use App\Models\Revenusparmois;
+use App\Models\Salles;
 use Error;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class DashboardController extends Controller
 {
@@ -299,19 +301,58 @@ class DashboardController extends Controller
     }
 
 
-    public function tradingChartforDebitandCredit(){
+    public function tradingChartforDebitandCredit()
+    {
 
-        $month = ['no','Jan','Fév','Mar', 'Avr', 'Mai','Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        $month = ['no', 'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
         $dataset = [];
-        for($i=1; $i<13; $i++){
-           $dep =  Depensesparmois::where('mois','like', date('y-').($i<10?'0':'').$i."-%")->first();
+        for ($i = 1; $i < 13; $i++) {
+            $dep = Depensesparmois::where('mois', 'like', date('y-') . ($i < 10 ? '0' : '') . $i . "-%")->first();
             $depenses = $dep ? $dep->solde : 0;
-            $rev =  Revenusparmois::where('mois','like', date('y-').($i<10?'0':'').$i."-%")->first();
+            $rev = Revenusparmois::where('mois', 'like', date('y-') . ($i < 10 ? '0' : '') . $i . "-%")->first();
             $revenus = $rev ? $rev->solde : 0;
             array_push($dataset, ['month' => $month[$i], 'debit' => $revenus, 'credit' => $depenses]);
         }
-
         return response()->json($dataset);
 
     }
+
+
+    public function performance(){
+        $salles = Salles::where('ac_id', Acs::latest()->first()->id)->with('eleves')->get();
+        $dataset = [];
+        foreach ($salles as $s){
+            $nbr_st = count($s->eleves);
+            $total = 0;
+            foreach ($s->eleves as $e){
+                if($e->noteTotal != 0){
+                    $total += $e->noteTotal;
+                }else{
+                    if ($e->note3 != 0){
+                        $total += $e->note3;
+                    }elseif($e->note2 !=0){
+                        $total += $e->note2;
+                    }else{
+                        $total += $e->note1;
+                    }
+                }
+
+
+            }
+            $avg= $total / $nbr_st;
+
+            array_push($dataset, ['salle'=> $s->nom_salle, 'avg' => $avg]);
+        }
+
+
+        $sorted = Arr::sort($dataset, [ fn($a, $b) => $b['avg'] - $a['avg']]);
+        $labels = [];
+        $data = [];
+            foreach($sorted as $v ){
+                $labels[] = $v['salle'];
+                $data[] = $v['avg'];
+            }
+        return response()->json(['labels'=> $labels,'datasets'=>[['label' => 'Moyenne Générale (%)' , 'data' => $data,'backgroundColor'=>'#7c3aed']]]);
+    }
+
 }

@@ -380,4 +380,12 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve quitté"]);
     }
+
+    public function fired($id, Request $request, AuditsController $audit){
+        $student = Etudiants::where('id', $id)->first();
+        $student->update(['fired' => 1, 'quit_at'=> now()]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom."comme suspendu";
+        $audit->listen('Etudiants', $message, $request->user()->id);
+        return \response()->json(['message' => "Eleve quitté"]);
+    }
 }
