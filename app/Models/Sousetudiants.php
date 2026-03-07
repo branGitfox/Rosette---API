@@ -38,5 +38,9 @@ class Sousetudiants extends Model
         return $this->belongsTo(Etudiants::class, 'et_id', 'id');
     }
 
+    public function studentdroit(){
+        return $this->hasOne(Studentdroits::class, 'se_id', 'id');
+    }
+
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Acs;
 use App\Models\Admissions;
 use App\Models\Classes;
+use App\Models\Droithistos;
 use App\Models\Etudiants;
 
 use App\Models\Recues;
@@ -339,8 +340,33 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $mention = request()->query('mention');
         $ecolage = request()->query('ecolage');
         $mois = request()->query('mois');
-        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->moisecolage($mois, $ecolage)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->moisecolage($mois, $ecolage)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage', 'studentdroit'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
     }
+
+    public function list_droit(){
+
+        $lignes = request()->query('lines');
+        $sexe = request()->query('sexe');
+        $year =request()->query('annee') == 0?DB::table('acs')->latest()->first()->id:request()->query('annee');
+        $classe = request()->query('classe');
+        $salle = request()->query('salle');
+        $q = request()->query('q');
+        $payed = request()->query('payed');
+
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed){
+            return $q->whereHas('studentdroit', function($q) use ($payed){
+                if($payed=='All'){
+                    return $q;
+                }
+                return $q->where('payed', $payed);
+            });
+        })->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)
+
+            ->with(['classe', 'salle', 'annee', 'ecolage', 'studentdroit'])])->orderBy('created_at', 'desc')->paginate($lignes));
+
+
+    }
+
 
 
     //NOMBRE D'ETUDIANT
@@ -387,5 +413,24 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom."comme suspendu";
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve quitté"]);
+    }
+
+    public function paydroit(Request $request, DroitsController $droit){
+        $fields = $request->validate([
+            'montant' => 'required|numeric',
+            'type' => 'required',
+            'se_id' => 'required',
+            'ac_id' => 'required',
+        ]);
+        $droit->pay($fields['se_id'], $fields['montant'], $fields['type']);
+        return \response()->json(['message' => "Paiement {$fields['type']}"]);
+    }
+
+    public function droithisto($id){
+        return Droithistos::where('dr_id', $id)->orderByDesc('created_at')->get();
+    }
+    public function deldroithisto($id){
+        Droithistos::findOrFail($id)->delete();
+        return \response()->json(['message' => "historique supprime"]);
     }
 }
