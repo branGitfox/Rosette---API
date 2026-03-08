@@ -88,6 +88,7 @@ Route::get('etudiant-list_droit', [EtudiantsController::class, 'list_droit'])->m
 Route::put('etudiant-quit/{id}', [EtudiantsController::class, 'quit'])->middleware('auth:sanctum');
 Route::post('etudiant-droit', [EtudiantsController::class, 'paydroit'])->middleware('auth:sanctum');
 Route::get('droithisto/{id}', [EtudiantsController::class, 'droithisto'])->middleware('auth:sanctum');
+Route::get('droitinfo/{id}', [DroitsController::class, 'droitinfo'])->middleware('auth:sanctum');
 
 Route::delete('droithisto/{id}', [EtudiantsController::class, 'deldroithisto'])->middleware('auth:sanctum');
 // ROUTE POUR MOIS ECOLAGE
@@ -235,6 +236,8 @@ Route::get('transfert-data', function () {
                 'ecolage' => $classe->ecolage,
                 'droit' => $classe->droit,
                 'kermesse' => $classe->kermesse,
+                'droit_ancien' => $classe->droit_ancien,
+                'kermesse_ancien' => $classe->kermesse_ancien,
             ]);
 
             foreach ($classe->salles as $salle) {

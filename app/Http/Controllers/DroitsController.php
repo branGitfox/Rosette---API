@@ -90,4 +90,9 @@ class DroitsController extends Controller
             }
         }
     }
+
+
+    public function droitinfo($id){
+        return Studentdroits::where('id', $id)->first(['payed']);
+    }
 }

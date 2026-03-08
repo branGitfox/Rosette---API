@@ -18,6 +18,8 @@ class ClassesController extends Controller
             'ecolage' => 'required|integer|max:999999999',
             'droit' => 'required|integer|max:999999999',
             'kermesse' => 'required|integer|max:999999999',
+            'droit_ancien' => 'required|integer|max:999999999',
+            'kermesse_ancien' => 'required|integer|max:999999999',
 
         ],
             [
@@ -36,6 +38,12 @@ class ClassesController extends Controller
                 'kermesse.required' => 'Kermesse obligatoire',
                 'kermesse.integer' => 'Kermesse doit être un chiffre',
                 'kermesse.max' => 'Kermesse ne doit pas dépasser 999999999',
+                'kermesse_ancien.required' => 'Kermesse ancien obligatoire',
+                'kermesse_ancien.integer' => 'Kermesse ancien doit être un chiffre',
+                'kermesse_ancien.max' => 'Kermesse ancien ne doit pas dépasser 999999999',
+                'droit_ancien.required' => 'droit ancien obligatoire',
+                'droit_ancien.integer' => 'droit ancien doit être un chiffre',
+                'droit_ancien.max' => 'droit ancien ne doit pas dépasser 999999999',
             ]);
         $takeAnneId = Acs::where('annee', $fields['ac_id'])->latest()->first()->id;
 
@@ -45,6 +53,8 @@ class ClassesController extends Controller
             'ecolage' => $fields['ecolage'],
             'droit' => $fields['droit'],
             'kermesse' => $fields['kermesse'],
+            'kermesse_ancien' => $fields['kermesse_ancien'],
+            'droit_ancien' => $fields['droit_ancien'],
 
         ]);
         $message = 'Creation d\'une classe';
@@ -86,7 +96,8 @@ class ClassesController extends Controller
         'ecolage' => 'required|integer|max:999999999',
         'droit' => 'required|integer|max:999999999',
         'kermesse' => 'required|integer|max:999999999',
-
+            'droit_ancien' => 'required|integer|max:999999999',
+            'kermesse_ancien' => 'required|integer|max:999999999',
     ],
         [
             'nom_classe.required' => 'Nom de la classe obligatoire',
@@ -104,6 +115,12 @@ class ClassesController extends Controller
             'kermesse.required' => 'Kermesse obligatoire',
             'kermesse.integer' => 'Kermesse doit être un chiffre',
             'kermesse.max' => 'Kermesse ne doit pas dépasser 999999999',
+            'kermesse_ancien.required' => 'Kermesse ancien obligatoire',
+            'kermesse_ancien.integer' => 'Kermesse ancien doit être un chiffre',
+            'kermesse_ancien.max' => 'Kermesse ancien ne doit pas dépasser 999999999',
+            'droit_ancien.required' => 'droit ancien obligatoire',
+            'droit_ancien.integer' => 'droit ancien doit être un chiffre',
+            'droit_ancien.max' => 'droit ancien ne doit pas dépasser 999999999',
         ]);
 
         Classes::findOrFail($id)->update([
@@ -112,6 +129,8 @@ class ClassesController extends Controller
             'ecolage' => $fields['ecolage'],
             'droit' => $fields['droit'],
             'kermesse' => $fields['kermesse'],
+            'kermesse_ancien' => $fields['kermesse_ancien'],
+            'droit_ancien' => $fields['droit_ancien'],
 
         ]);
         $message = 'Modification d\'une classe';
