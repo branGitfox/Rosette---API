@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admissions;
 use App\Models\Sousetudiants;
+use App\Models\Studentdroits;
 use Illuminate\Http\Request;
 
 class SousetudiantsController extends Controller
@@ -21,6 +22,8 @@ class SousetudiantsController extends Controller
             'noteTotal' =>0,
             'et_id' => $et_id,
         ]);
+
+
     }
 
 

@@ -11,6 +11,7 @@ use App\Models\Etudiants;
 use App\Models\Recues;
 use App\Models\Salles;
 use App\Models\Sousetudiants;
+use App\Models\Studentdroits;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -103,9 +104,17 @@ class EtudiantsController extends Controller
             $sousetudiants->create($fields['sa_id'],$ac_id ,$fields['cl_id'], $et_id,0, 0, 0);
 
             $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
+
+//            //Verification d'ancien
+             $st = Sousetudiants::where('id', $last_sousetudiant)->with('student')->first();
+             $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
+             $classe = Sousetudiants::where('id', $last_sousetudiant)->with('classe')->first()['classe'];
+             $mount = $old ? $classe->droit_ancien: $classe->droit;
+
 //            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
 //            $droit->increment($ac_id, $montant_droit);
 //            $kermesse->increment($ac_id, $montant_kermesse);
+            Studentdroits::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount, 'payed' => 0, 'paid'=>0]);
             $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
             foreach($mois_list->mois as  $m){
@@ -241,7 +250,16 @@ class EtudiantsController extends Controller
                 'telephoneTuteur' => $fields['telephoneTuteur'],
             ]);
             $sous_et = Sousetudiants::where('et_id', $request->id)->latest()->first()->id;
+
             $sousetudiants->update($sous_et, ['cl_id' => $request->cl_id, 'sa_id' => $request->sa_id==0?null:$request->sa_id]);
+
+            //Verification d'ancien
+            $st = Sousetudiants::where('id', $sous_et)->with('student')->first();
+            $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
+            $classe = Sousetudiants::where('id', $sous_et)->with('classe')->first()['classe'];
+            $mount = $old ? $classe->droit_ancien: $classe->droit;
+
+            Studentdroits::where('se_id' ,$sous_et)->update(['reste' => $mount, 'payed' => 0, 'paid'=>0]);
             $message = 'Modification d\'un etudiant';
             $audit->listen('Étudiants', $message, $request->user()->id);
             return response()->json(['message' => 'Etudiant modifie']);
@@ -278,6 +296,16 @@ public function deletes($id, Request $request, AuditsController $audit) {
          $montant_droit = DB::table('classes')->latest()->first()->droit;
          $montant_kermesse = DB::table('classes')->latest()->first()->kermesse;
          $last_sousetudiant = DB::table('sousetudiants')->latest()->first()->id;
+         //            //Verification d'ancien
+         $st = Sousetudiants::where('id', $last_sousetudiant)->with('student')->first();
+         $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
+         $classe = Sousetudiants::where('id', $last_sousetudiant)->with('classe')->first()['classe'];
+         $mount = $old ? $classe->droit_ancien: $classe->droit;
+
+//            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
+//            $droit->increment($ac_id, $montant_droit);
+//            $kermesse->increment($ac_id, $montant_kermesse);
+         Studentdroits::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount, 'payed' => 0, 'paid'=>0]);
 //         $ecolage->increment($ac_id, $ecolage_devide);
 //         $droit->increment($ac_id, $montant_droit);
 //         $kermesse->increment($ac_id, $montant_kermesse);
@@ -355,10 +383,10 @@ public function unsuspend($id, Request $request, AuditsController $audit){
 
         return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed){
             return $q->whereHas('studentdroit', function($q) use ($payed){
-                if($payed=='All'){
+                if($payed=='0'){
                     return $q;
                 }
-                return $q->where('payed', $payed);
+                return $q->where('payed', $payed==2?0:$payed);
             });
         })->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)
 

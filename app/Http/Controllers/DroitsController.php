@@ -47,10 +47,15 @@ class DroitsController extends Controller
 
     public function pay($se_id, $montant, $type){
         $droit = Studentdroits::where('se_id', $se_id)->first();
+         $st = Sousetudiants::where('id', $se_id)->with('student')->first();
+         $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
+
+
         if(!$droit){
             throw new \Error('Impossible de payer le droit');
         }
-        $mount = Sousetudiants::where('id', $se_id)->with('classe')->first()['classe']->droit;
+        $classe = Sousetudiants::where('id', $se_id)->with('classe')->first()['classe'];
+        $mount =$old ? $classe->droit_ancien: $classe->droit;
         if(!$mount){
             throw new \Error('Impossible de payer le droit');
         }
