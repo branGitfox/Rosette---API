@@ -8,12 +8,14 @@ use Illuminate\Http\Request;
 class MoisecolageController extends Controller
 {
     //INITIALISE LES MOIS D'ECOLAGE D'UNE ANNE_SCOLAIRE
-    public function initializeMoisecolage($ac_id, $et_id, $mois, $payé){
+    public function initializeMoisecolage($ac_id, $et_id, $mois, $payé, $reste, $paid){
         Moisecolage::create([
             'ac_id' => $ac_id,
             'et_id' => $et_id,
             'mois' => $mois,
-            'payé' => $payé
+            'payé' => $payé,
+            'reste' => $reste,
+            'paid' => $paid,
         ]);
     }
 }

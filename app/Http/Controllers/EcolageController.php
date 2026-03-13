@@ -6,6 +6,7 @@ use App\Models\Acs;
 use App\Models\Ecolages;
 use App\Models\Etudiants;
 use App\Models\Moisecolage;
+use App\Models\Sousetudiants;
 use Illuminate\Http\Request;
 
 class EcolageController extends Controller
@@ -37,16 +38,64 @@ class EcolageController extends Controller
     }
 
     //PAIEMENT ECOLAGE
-    public function pay($id,Request $request, RevenusMoisController $revenusmois, AuditsController $audit){
-        $montant = $request?->cost;
-        Moisecolage::findOrFail($id)->update([
-            'payé' => 1
+    public function pay($id,Request $request,DepensesMoisController $depensemois, RevenusMoisController $revenusmois, AuditsController $audit){
+        $fields = $request->validate([
+            'cost' => 'required',
+            'type' => 'required',
         ]);
-        $this->increment($request->ac_id,$request->prof==1?($montant/2):$montant);
-        $revenusmois->increment($request->ac_id, Moisecolage::findOrFail($id)->mois,$request->prof==1?($montant/2):$montant);
-        $message = "Paiement ecolage";
-        $audit->listen('Financier', $message, $request->user()->id);
-        return response()->json(['message' => 'ecolage payé']);
+
+        $montant = $fields['cost'];
+        $type = $fields['type'];
+
+        if ($montant == 0){
+            throw new \Error('Le montant ne doit pas etre null');
+        }
+
+        $moisecolage = Moisecolage::findOrFail($id);
+        $classe = Sousetudiants::where('id', $moisecolage->et_id)->with('classe')->first()['classe'];
+        $prof = Sousetudiants::where('id', $moisecolage->et_id)->with('student')->first()['student']->enfantProf == 1;
+        if($type == 'complet'){
+            if($moisecolage->reste != ($prof ? $classe->ecolage / 2: $classe->ecolage)){
+                throw new \Error('Une avance a deja été payé');
+            }else{
+                $moisecolage->update(['payé' => 1, 'reste' => 0, 'paid' => ($prof ? $classe->ecolage / 2: $classe->ecolage)]);
+                $this->increment($request->ac_id,$moisecolage->reste);
+                $revenusmois->increment($request->ac_id, date('y-m-d'),($prof ? $classe->ecolage / 2: $classe->ecolage));
+                $message = "payement  ecolage";
+                $audit->listen('Financier', $message, $request->user()->id);
+                return response()->json(['message' => 'Ecolage payé']);
+            }
+        }elseif($type == 'avance'){
+            if ($montant > $moisecolage->reste){
+                throw new \Error("le montant ne doit pas depasser le reste à payer {$moisecolage->reste}");
+            }else{
+                if($montant == $moisecolage->reste){
+                    $paye = 1;
+                }else{
+                    $paye = 0;
+                }
+                $moisecolage->update(['payé' => $paye, 'reste' => $moisecolage->reste - $montant, 'paid' => $moisecolage->paid + $montant]);
+                $this->increment($request->ac_id, $montant);
+                $revenusmois->increment($request->ac_id, date('y-m-d'),$montant);
+                $message = "payement avance ecolage";
+                $audit->listen('Financier', $message, $request->user()->id);
+                return response()->json(['message' => 'Avance ecolage payé']);
+
+            }
+        }else{
+            if($moisecolage->paid == 0){
+                throw new \Error('Impossible de rembourser, aucune somme n\'a été payé');
+
+            }else{
+                $this->decrement($request->ac_id,$moisecolage->paid);
+                $depensemois->increment($request->ac_id, date('y-m-d'),$moisecolage->paid);
+                $moisecolage->update(['payé' => 0, 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage, 'paid' => 0]);
+                $message = "Remboursement ecolage";
+                $audit->listen('Financier', $message, $request->user()->id);
+                return response()->json(['message' => 'ecolage remboursé']);
+            }
+        }
+
     }
 
 

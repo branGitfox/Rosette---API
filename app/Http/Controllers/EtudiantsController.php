@@ -125,7 +125,7 @@ class EtudiantsController extends Controller
 //                    $payé = false;
 //                }
 
-                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false);
+                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false, $classe->ecolage, 0);
             }
 
 
@@ -320,7 +320,7 @@ public function deletes($id, Request $request, AuditsController $audit) {
 ////                 $payé = false;
 //             }
 
-             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false);
+             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false, $classe->ecolage, 0);
          }
 
          $sousetudiant->update(['transfert' => true]);

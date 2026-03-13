@@ -10,6 +10,8 @@ class Moisecolage extends Model
         'ac_id',
         'et_id',
         'mois',
-        'payé'
+        'payé',
+        'reste',
+        'paid',
     ];
 }
