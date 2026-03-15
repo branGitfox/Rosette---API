@@ -65,7 +65,7 @@ class SousetudiantsController extends Controller
     }
 
     public function paymois($id){
-        return response()->json(Sousetudiants::where('id', $id)->with('ecolage')->first());
+        return response()->json(Sousetudiants::where('id', $id)->with(['ecolage.history' => fn($q)=> $q->latest()])->first());
     }
 
 }

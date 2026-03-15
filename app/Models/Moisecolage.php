@@ -14,4 +14,9 @@ class Moisecolage extends Model
         'reste',
         'paid',
     ];
+
+
+    public function history(){
+        return $this->hasMany(Ecohistos::class, 'ec_id', 'id');
+    }
 }

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Acs;
+use App\Models\Droithistos;
+use App\Models\Ecohistos;
 use App\Models\Ecolages;
 use App\Models\Etudiants;
 use App\Models\Moisecolage;
 use App\Models\Sousetudiants;
+use App\Models\Studentdroits;
 use Illuminate\Http\Request;
 
 class EcolageController extends Controller
@@ -62,6 +65,8 @@ class EcolageController extends Controller
                 $this->increment($request->ac_id,$moisecolage->reste);
                 $revenusmois->increment($request->ac_id, date('y-m-d'),($prof ? $classe->ecolage / 2: $classe->ecolage));
                 $message = "payement  ecolage";
+                Ecohistos::create(['montant' => ($prof ? $classe->ecolage / 2: $classe->ecolage), 'ec_id' => $id, 'type' => $type, 'reste' => 0]);
+
                 $audit->listen('Financier', $message, $request->user()->id);
                 return response()->json(['message' => 'Ecolage payé']);
             }
@@ -79,6 +84,7 @@ class EcolageController extends Controller
                 $revenusmois->increment($request->ac_id, date('y-m-d'),$montant);
                 $message = "payement avance ecolage";
                 $audit->listen('Financier', $message, $request->user()->id);
+                Ecohistos::create(['montant' => $montant, 'ec_id' => $id, 'type' => $type, 'reste' => $moisecolage->reste]);
                 return response()->json(['message' => 'Avance ecolage payé']);
 
             }
@@ -88,10 +94,12 @@ class EcolageController extends Controller
 
             }else{
                 $this->decrement($request->ac_id,$moisecolage->paid);
+                Ecohistos::create(['montant' => $moisecolage->paid, 'ec_id' => $id, 'type' => 'rembourse', 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage]);
                 $depensemois->increment($request->ac_id, date('y-m-d'),$moisecolage->paid);
                 $moisecolage->update(['payé' => 0, 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage, 'paid' => 0]);
                 $message = "Remboursement ecolage";
                 $audit->listen('Financier', $message, $request->user()->id);
+//                Ecohistos::create(['montant' => $montant, 'ec_id' => $id, 'type' => $type, 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage]);
                 return response()->json(['message' => 'ecolage remboursé']);
             }
         }
@@ -107,6 +115,11 @@ class EcolageController extends Controller
 
 
         return response()->json(['title' => "Solde d'écolages", 'value' => $ecolages, 'icon' => 'FaMoneyBillWave']);
+    }
+
+
+    public function ecoinfo($id){
+        return Moisecolage::where('id', $id)->first(['payé']);
     }
 
 }

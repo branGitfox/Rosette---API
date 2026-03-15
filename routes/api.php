@@ -89,6 +89,8 @@ Route::put('etudiant-quit/{id}', [EtudiantsController::class, 'quit'])->middlewa
 Route::post('etudiant-droit', [EtudiantsController::class, 'paydroit'])->middleware('auth:sanctum');
 Route::get('droithisto/{id}', [EtudiantsController::class, 'droithisto'])->middleware('auth:sanctum');
 Route::get('droitinfo/{id}', [DroitsController::class, 'droitinfo'])->middleware('auth:sanctum');
+Route::get('ecohisto/{id}', [EtudiantsController::class, 'ecohisto'])->middleware('auth:sanctum');
+Route::get('ecoinfo/{id}', [EcolageController::class, 'ecoinfo'])->middleware('auth:sanctum');
 
 Route::delete('droithisto/{id}', [EtudiantsController::class, 'deldroithisto'])->middleware('auth:sanctum');
 // ROUTE POUR MOIS ECOLAGE
