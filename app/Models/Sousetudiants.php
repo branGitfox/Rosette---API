@@ -42,5 +42,9 @@ class Sousetudiants extends Model
         return $this->hasOne(Studentdroits::class, 'se_id', 'id');
     }
 
+    public function studentkr(){
+        return $this->hasOne(Studentkermesses::class, 'se_id', 'id');
+    }
+
 
 }

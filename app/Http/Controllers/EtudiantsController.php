@@ -9,10 +9,12 @@ use App\Models\Droithistos;
 use App\Models\Ecohistos;
 use App\Models\Etudiants;
 
+use App\Models\Kermessehistos;
 use App\Models\Recues;
 use App\Models\Salles;
 use App\Models\Sousetudiants;
 use App\Models\Studentdroits;
+use App\Models\Studentkermesses;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -111,11 +113,14 @@ class EtudiantsController extends Controller
              $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
              $classe = Sousetudiants::where('id', $last_sousetudiant)->with('classe')->first()['classe'];
              $mount = $old ? $classe->droit_ancien: $classe->droit;
+             $mount2 = $old ? $classe->kermesse_ancien: $classe->kermesse;
 
 //            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
 //            $droit->increment($ac_id, $montant_droit);
 //            $kermesse->increment($ac_id, $montant_kermesse);
             Studentdroits::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount, 'payed' => 0, 'paid'=>0]);
+            Studentkermesses::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount2, 'payed' => 0, 'paid'=>0]);
+
             $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
             foreach($mois_list->mois as  $m){
@@ -259,8 +264,11 @@ class EtudiantsController extends Controller
             $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
             $classe = Sousetudiants::where('id', $sous_et)->with('classe')->first()['classe'];
             $mount = $old ? $classe->droit_ancien: $classe->droit;
+            $mount2 = $old ? $classe->kermesse_ancien: $classe->kermesse;
+
 
             Studentdroits::where('se_id' ,$sous_et)->update(['reste' => $mount, 'payed' => 0, 'paid'=>0]);
+            Studentkermesses::where('se_id' ,$sous_et)->update(['reste' => $mount2, 'payed' => 0, 'paid'=>0]);
             $message = 'Modification d\'un etudiant';
             $audit->listen('Étudiants', $message, $request->user()->id);
             return response()->json(['message' => 'Etudiant modifie']);
@@ -302,11 +310,14 @@ public function deletes($id, Request $request, AuditsController $audit) {
          $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
          $classe = Sousetudiants::where('id', $last_sousetudiant)->with('classe')->first()['classe'];
          $mount = $old ? $classe->droit_ancien: $classe->droit;
+         $mount2 = $old ? $classe->kermesse_ancien: $classe->kermesse;
 
 //            $ecolage->increment($ac_id, $montant_ecolage / ($enfant_prof==1?2:1));
 //            $droit->increment($ac_id, $montant_droit);
 //            $kermesse->increment($ac_id, $montant_kermesse);
          Studentdroits::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount, 'payed' => 0, 'paid'=>0]);
+         Studentkermesses::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount2, 'payed' => 0, 'paid'=>0]);
+
 //         $ecolage->increment($ac_id, $ecolage_devide);
 //         $droit->increment($ac_id, $montant_droit);
 //         $kermesse->increment($ac_id, $montant_kermesse);
@@ -372,6 +383,21 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->moisecolage($mois, $ecolage)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage', 'studentdroit'])])->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
+    public function list_inactif(){
+
+        $lignes = request()->query('lines');
+        $sexe = request()->query('sexe');
+        $year =request()->query('annee') == 0?DB::table('acs')->latest()->first()->id:request()->query('annee');
+        $classe = request()->query('classe');
+        $salle = request()->query('salle');
+        $q = request()->query('q');
+        $quitorfired = request()->query('quitorfired');
+//        $mention = request()->query('mention');
+//        $ecolage = request()->query('ecolage');
+//        $mois = request()->query('mois');
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->classe($classe)->salle($salle)->inactif()->quitorfired($quitorfired)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee'])])->orderBy('created_at', 'desc')->paginate($lignes));
+    }
+
     public function list_droit(){
 
         $lignes = request()->query('lines');
@@ -392,6 +418,30 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         })->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)
 
             ->with(['classe', 'salle', 'annee', 'ecolage', 'studentdroit'])])->orderBy('created_at', 'desc')->paginate($lignes));
+
+
+    }
+
+    public function list_kermesse(){
+
+        $lignes = request()->query('lines');
+        $sexe = request()->query('sexe');
+        $year =request()->query('annee') == 0?DB::table('acs')->latest()->first()->id:request()->query('annee');
+        $classe = request()->query('classe');
+        $salle = request()->query('salle');
+        $q = request()->query('q');
+        $payed = request()->query('payed');
+
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed){
+            return $q->whereHas('studentkr', function($q) use ($payed){
+                if($payed=='0'){
+                    return $q;
+                }
+                return $q->where('payed', $payed==2?0:$payed);
+            });
+        })->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)
+
+            ->with(['classe', 'salle', 'annee', 'ecolage', 'studentkr'])])->orderBy('created_at', 'desc')->paginate($lignes));
 
 
     }
@@ -435,14 +485,30 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve quitté"]);
     }
+    public function unquit($id, Request $request, AuditsController $audit){
+        $student = Etudiants::where('id', $id)->first();
+        $student->update(['quit' => 0, 'quit_at'=> null]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." reintegré";
+        $audit->listen('Etudiants', $message, $request->user()->id);
+        return \response()->json(['message' => "Eleve reintegré"]);
+    }
 
     public function fired($id, Request $request, AuditsController $audit){
         $student = Etudiants::where('id', $id)->first();
-        $student->update(['fired' => 1, 'quit_at'=> now()]);
-        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom."comme suspendu";
+        $student->update(['fired' => 1, 'fired_at'=> now()]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom."comme renvoyé";
         $audit->listen('Etudiants', $message, $request->user()->id);
-        return \response()->json(['message' => "Eleve quitté"]);
+        return \response()->json(['message' => "Eleve renvoyé"]);
     }
+
+    public function unfired($id, Request $request, AuditsController $audit){
+        $student = Etudiants::where('id', $id)->first();
+        $student->update(['fired' => 0, 'fired_at'=> null]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." reintegré";
+        $audit->listen('Etudiants', $message, $request->user()->id);
+        return \response()->json(['message' => "Eleve reintegré"]);
+    }
+
 
     public function paydroit(Request $request, DroitsController $droit){
         $fields = $request->validate([
@@ -455,6 +521,17 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         return \response()->json(['message' => "Paiement {$fields['type']}"]);
     }
 
+    public function paykermesse(Request $request, KermessesController $kermesse){
+        $fields = $request->validate([
+            'montant' => 'required|numeric',
+            'type' => 'required',
+            'se_id' => 'required',
+            'ac_id' => 'required',
+        ]);
+        $kermesse->pay($fields['se_id'], $fields['montant'], $fields['type']);
+        return \response()->json(['message' => "Paiement {$fields['type']}"]);
+    }
+
     public function droithisto($id){
         return Droithistos::where('dr_id', $id)->orderByDesc('created_at')->get();
     }
@@ -462,8 +539,24 @@ public function unsuspend($id, Request $request, AuditsController $audit){
     public function ecohisto($id){
         return Ecohistos::where('ec_id', $id)->orderByDesc('created_at')->get();
     }
+
+    public function krhisto($id){
+        return Kermessehistos::where('kr_id', $id)->orderByDesc('created_at')->get();
+    }
     public function deldroithisto($id){
         Droithistos::findOrFail($id)->delete();
         return \response()->json(['message' => "historique supprime"]);
     }
+
+    public function delecohisto($id){
+        Ecohistos::findOrFail($id)->delete();
+        return \response()->json(['message' => "historique supprime"]);
+    }
+
+    public function delkrhisto($id){
+        Kermessehistos::findOrFail($id)->delete();
+        return \response()->json(['message' => "historique supprime"]);
+    }
+
+
 }

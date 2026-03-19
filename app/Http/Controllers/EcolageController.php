@@ -122,4 +122,8 @@ class EcolageController extends Controller
         return Moisecolage::where('id', $id)->first(['payé']);
     }
 
+    public function delecohisto($id){
+
+    }
+
 }

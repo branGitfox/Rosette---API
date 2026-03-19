@@ -13,6 +13,6 @@ class Pages extends Model
 
 
     public function roles(){
-        return $this->belongsToMany(Roles::class, 'roles_pages', 'role_id', 'page_id');
+        return $this->belongsToMany(Roles::class, 'roles_pages', 'page_id', 'role_id');
     }
 }

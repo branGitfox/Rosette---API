@@ -85,14 +85,28 @@ Route::post('etudiant/{id}', [EtudiantsController::class, 'updates'])->middlewar
 Route::delete('etudiant/{id}', [EtudiantsController::class, 'deletes']);
 Route::get('etudiant-list_ecolage', [EtudiantsController::class, 'list_ecolage'])->middleware('auth:sanctum');
 Route::get('etudiant-list_droit', [EtudiantsController::class, 'list_droit'])->middleware('auth:sanctum');
+Route::get('etudiant-list_kermesse', [EtudiantsController::class, 'list_kermesse'])->middleware('auth:sanctum');
+Route::get('etudiant-list_inactif', [EtudiantsController::class, 'list_inactif'])->middleware('auth:sanctum');
+
 Route::put('etudiant-quit/{id}', [EtudiantsController::class, 'quit'])->middleware('auth:sanctum');
+Route::put('etudiant-unquit/{id}', [EtudiantsController::class, 'unquit'])->middleware('auth:sanctum');
+
+Route::put('etudiant-fired/{id}', [EtudiantsController::class, 'fired'])->middleware('auth:sanctum');
+Route::put('etudiant-unfired/{id}', [EtudiantsController::class, 'unfired'])->middleware('auth:sanctum');
+
 Route::post('etudiant-droit', [EtudiantsController::class, 'paydroit'])->middleware('auth:sanctum');
+Route::post('etudiant-kermesse', [EtudiantsController::class, 'paykermesse'])->middleware('auth:sanctum');
 Route::get('droithisto/{id}', [EtudiantsController::class, 'droithisto'])->middleware('auth:sanctum');
 Route::get('droitinfo/{id}', [DroitsController::class, 'droitinfo'])->middleware('auth:sanctum');
 Route::get('ecohisto/{id}', [EtudiantsController::class, 'ecohisto'])->middleware('auth:sanctum');
 Route::get('ecoinfo/{id}', [EcolageController::class, 'ecoinfo'])->middleware('auth:sanctum');
+Route::get('krhisto/{id}', [EtudiantsController::class, 'krhisto'])->middleware('auth:sanctum');
+Route::get('krinfo/{id}', [KermessesController::class, 'krinfo'])->middleware('auth:sanctum');
 
 Route::delete('droithisto/{id}', [EtudiantsController::class, 'deldroithisto'])->middleware('auth:sanctum');
+Route::delete('krhisto/{id}', [EtudiantsController::class, 'delkrhisto'])->middleware('auth:sanctum');
+Route::delete('ecohisto/{id}', [EtudiantsController::class, 'delecohisto'])->middleware('auth:sanctum');
+
 // ROUTE POUR MOIS ECOLAGE
 Route::get('mac-list_year/{id}', [MacController::class, 'list_year'])->middleware('auth:sanctum');
 Route::get('etudiant-count', [EtudiantsController::class, 'count'])->middleware('auth:sanctum');
