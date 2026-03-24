@@ -311,7 +311,7 @@ class DashboardController extends Controller
             $depenses = $dep ? $dep->solde : 0;
             $rev = Revenusparmois::where('mois', 'like', date('y-') . ($i < 10 ? '0' : '') . $i . "-%")->first();
             $revenus = $rev ? $rev->solde : 0;
-            array_push($dataset, ['month' => $month[$i], 'debit' => $revenus, 'credit' => $depenses]);
+            array_push($dataset, ['month' => $month[$i], 'credit' => $revenus, 'debit' => $depenses]);
         }
         return response()->json($dataset);
 
