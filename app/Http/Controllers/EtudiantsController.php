@@ -458,15 +458,27 @@ public function unsuspend($id, Request $request, AuditsController $audit){
     public function effectif(WorkersController $worker){
         $boy = Etudiants::isGenre(1)->get()->count();
         $girl = Etudiants::isGenre(0)->get()->count();
+        $students = Classes::where('ac_id', Acs::latest()->first()->id)->with('student')->get();
+
+        $data = [];
+        foreach ($students as $st){
+            array_push($data, count($st->student));
+            $classe[] = ucfirst($st->nom_classe);
+        }
+
+
 
         return response()->json([
-            'labels' => ['Garçons', 'Filles', 'Enseignants', 'Employés'],
+            'labels' => $classe,
             'datasets' => [
                 [
                 'label' => 'Répartition',
-                'data' => [$boy,$girl , $worker->count()['prof']['value'], $worker->count()['all']['value']
+                'data' => $data,
+                'backgroundColor' => [
+                    '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e',
+                    '#14b8a6', '#06b6d4', '#0ea5e9', '#6366f1', '#8b5cf6',
+                    '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#64748b'
                 ],
-                'backgroundColor' => ['#895256', '#9f7126', '#3b82f6', '#10b981'],
                 'borderColor'=>'#fff',
                     'borderWidth' => 2]
             ]]);

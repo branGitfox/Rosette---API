@@ -23,4 +23,8 @@ class Classes extends Model
     public function salles(){
         return $this->hasMany(Salles::class, 'cl_id', 'id');
     }
+
+    public function student(){
+        return $this->hasMany(Sousetudiants::class, 'cl_id', 'id');
+    }
 }
