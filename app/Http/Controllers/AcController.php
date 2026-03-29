@@ -41,9 +41,9 @@ class AcController extends Controller
         }
 
 
-        $message = 'Creation d\'une Annee scolaire';
+        $message = 'Creation d\'une Annee scolaire '. $fields['annee'];
         $audit->listen('Paramètres', $message, $request->user()->id);
-        return response()->json(['message' => 'Annee scolaire cree']);
+        return response()->json(['message' => 'Annee scolaire creée']);
     }
 
 
@@ -53,9 +53,11 @@ class AcController extends Controller
     }
 
     //SUPPRESSION ANNE SCOLAIRE AVEC MOIS
-    public function delete($id){
+    public function delete($id, AuditsController $audit){
+        $message = 'Suppression d\'une Annee scolaire '. Acs::findOrFail($id)->annee;
+        $audit->listen('Paramètres', $message, request()->user()->id);
        $acs = Acs::findOrFail($id);
-         Mac::query()->where('id_ac', $acs->annee)->delete();
+        Mac::query()->where('id_ac', $acs->annee)->delete();
         $acs->delete();
         return response()->json(['message' => 'Annee Scolaire supprimé']);
     }

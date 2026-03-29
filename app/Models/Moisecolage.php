@@ -19,4 +19,8 @@ class Moisecolage extends Model
     public function history(){
         return $this->hasMany(Ecohistos::class, 'ec_id', 'id');
     }
+
+    public function souset(){
+        return $this->belongsTo(Sousetudiants::class, 'et_id', 'id');
+    }
 }

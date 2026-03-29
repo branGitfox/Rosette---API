@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user()->load(['roles' => fn($q) => $q->with('pages')]);
 })->middleware('auth:sanctum');
-
+Route::put('user/{id}', [UsersController::class, 'updates'])->middleware('auth:sanctum');
 
 //ROUTE POUR UTILISATEUR
 Route::post('/users-creation', [UsersController::class, 'creation'])->middleware('auth:sanctum');
@@ -82,7 +82,7 @@ Route::get('etudiant-list', [EtudiantsController::class, 'list'])->middleware('a
 Route::get('etudiant-list_note', [EtudiantsController::class, 'list_note'])->middleware('auth:sanctum');
 Route::get('etudiant/{id}', [EtudiantsController::class, 'etudiant'])->middleware('auth:sanctum');
 Route::post('etudiant/{id}', [EtudiantsController::class, 'updates'])->middleware('auth:sanctum');
-Route::delete('etudiant/{id}', [EtudiantsController::class, 'deletes']);
+Route::delete('etudiant/{id}', [EtudiantsController::class, 'deletes'])->middleware('auth:sanctum');
 Route::get('etudiant-list_ecolage', [EtudiantsController::class, 'list_ecolage'])->middleware('auth:sanctum');
 Route::get('etudiant-list_droit', [EtudiantsController::class, 'list_droit'])->middleware('auth:sanctum');
 Route::get('etudiant-list_kermesse', [EtudiantsController::class, 'list_kermesse'])->middleware('auth:sanctum');
@@ -102,7 +102,7 @@ Route::get('ecohisto/{id}', [EtudiantsController::class, 'ecohisto'])->middlewar
 Route::get('ecoinfo/{id}', [EcolageController::class, 'ecoinfo'])->middleware('auth:sanctum');
 Route::get('krhisto/{id}', [EtudiantsController::class, 'krhisto'])->middleware('auth:sanctum');
 Route::get('krinfo/{id}', [KermessesController::class, 'krinfo'])->middleware('auth:sanctum');
-
+Route::put('autopay-kermess/{id}', [KermessesController::class, 'autopay'])->middleware('auth:sanctum');
 Route::delete('droithisto/{id}', [EtudiantsController::class, 'deldroithisto'])->middleware('auth:sanctum');
 Route::delete('krhisto/{id}', [EtudiantsController::class, 'delkrhisto'])->middleware('auth:sanctum');
 Route::delete('ecohisto/{id}', [EtudiantsController::class, 'delecohisto'])->middleware('auth:sanctum');
@@ -236,7 +236,7 @@ Route::get('audit-stats', [AuditsController::class, 'stats'])->middleware('auth:
 
 //pasmois
 
-Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois']);
+Route::get('pay-mois/{id}', [SousetudiantsController::class, 'paymois'])->middleware('auth:sanctum');
 
 //GENERATION NUMERO FACTURE
 Route::get('recue', [EtudiantsController::class, 'recue'])->middleware('auth:sanctum');
@@ -296,4 +296,4 @@ Route::get('/roles', [RolesController::class, 'getRoles'])->middleware('auth:san
 Route::post('/roles', [RolesController::class, 'create'])->middleware('auth:sanctum');
 Route::put('/roles/{roles}', [RolesController::class, 'edit'])->middleware('auth:sanctum');
 Route::delete('/roles/{roles}', [RolesController::class, 'destroy'])->middleware('auth:sanctum');
-Route::get('/roles/{roles}', [RolesController::class, 'show']);
+Route::get('/roles/{roles}', [RolesController::class, 'show'])->middleware('auth:sanctum');

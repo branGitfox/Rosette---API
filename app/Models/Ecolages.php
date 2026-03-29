@@ -10,4 +10,6 @@ class Ecolages extends Model
         'solde',
         'ac_id'
     ];
+
+
 }

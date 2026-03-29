@@ -49,7 +49,7 @@ class KermessesController extends Controller
         }
     }
 
-    public function pay($se_id, $montant, $type){
+    public function pay($se_id, $montant, $type, $revenusMois, $depensesMois, $audit){
         $kerm = Studentkermesses::where('se_id', $se_id)->first();
         $st = Sousetudiants::where('id', $se_id)->with('student')->first();
         $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
@@ -68,10 +68,13 @@ class KermessesController extends Controller
             if($kerm->reste != $mount){
                 throw new \Error('Impossible de payer en totalité, une avance a été payé');
             }
-
-            Studentkermesses::where('se_id', $se_id)->update(['reste' => $kerm->reste - $mount, 'payed' => 1, 'paid' => $mount]);
             $this->increment(Acs::latest()->first()->id, $mount);
+            $revenusMois->increment(Acs::latest()->first()->id,date('y-m-d'), $mount);
+            Studentkermesses::where('se_id', $se_id)->update(['reste' => $kerm->reste - $mount, 'payed' => 1, 'paid' => $mount]);
+
             Kermessehistos::create(['montant' => $mount, 'kr_id' => $kerm->id, 'type' => $type, 'reste' => $kerm->reste - $mount]);
+            $message = "Paiement complet de Kermesse pour ".$st->student->nom." ".$st->student->prenom;
+            $audit->listen('Financier', $message, request()->user()->id);
             return response()->json(['message' => 'Paiement  effectué']);
         }elseif($type == "avance"){
             if($montant > $kerm->reste){
@@ -84,7 +87,10 @@ class KermessesController extends Controller
                 }
                 Studentkermesses::where('se_id', $se_id)->update(['reste' => $kerm->reste - $montant, 'payed' => $payed, 'paid' => $kerm->paid+$montant]);
                 $this->increment(Acs::latest()->first()->id, $montant);
+                $revenusMois->increment(Acs::latest()->first()->id,date('y-m-d'), $montant);
                 Kermessehistos::create(['montant' => $montant, 'kr_id' => $kerm->id, 'type' => $type, 'reste' => $kerm->reste - $montant]);
+                $message = "Paiement partiel de Kermesse pour ".$st->student->nom." ".$st->student->prenom;
+                $audit->listen('Financier', $message, request()->user()->id);
                 return response()->json(['message' => 'Paiement avance effectué']);
             }
 
@@ -94,7 +100,10 @@ class KermessesController extends Controller
             }else{
                 Studentkermesses::where('se_id', $se_id)->update(['reste' => $mount, 'payed' => 0, 'paid' => 0]);
                 $this->decrement(Acs::latest()->first()->id, $kerm->paid);
+                $depensesMois->increment(Acs::latest()->first()->id,date('y-m-d'), $kerm->paid);
                 Kermessehistos::create(['montant' => $mount, 'kr_id' => $kerm->id, 'type' => $type, 'reste' => $mount]);
+                $message = "Remboursement de Kermesse pour ".$st->student->nom." ".$st->student->prenom;
+                $audit->listen('Financier', $message, request()->user()->id);
                 return response()->json(['message' => 'Remboursement effectué']);
             }
         }
@@ -102,6 +111,16 @@ class KermessesController extends Controller
 
     public function krinfo($id){
         return Studentkermesses::where('id', $id)->first(['payed']);
+    }
+
+    public function autopay($id, AuditsController $audit){
+
+        $payed = Studentkermesses::where('id', $id)->first()->payed;
+        Studentkermesses::findOrFail($id)->update(['payed' => $payed == 1?0:1]);
+        $st = Studentkermesses::where('id', $id)->with(['souset' => fn($q) => $q->with('student')])->first();
+        $message = ($payed ==1? "Annulation":"Paiement")." de Kermesse par un parent commun pour ".$st->souset->student->nom." ".$st->souset->student->prenom;
+        $audit->listen('Financier', $message, request()->user()->id);
+        return response()->json(['message' => "Paiement ".($payed ==1? "annulé":"reussi")]);
     }
 
 }

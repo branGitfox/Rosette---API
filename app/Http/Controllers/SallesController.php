@@ -36,9 +36,9 @@ class SallesController extends Controller
             'cl_id' => $fields['cl_id'],
             'ac_id' => $takeAcid,
         ]);
-        $message = 'Creation d\'une Salle de classe';
+        $message = 'Creation d\'une Salle de classe '.$fields['nom_salle'];
         $audit->listen('Paramètres', $message, $request->user()->id);
-        return response()->json(['message' => 'Salle de classe creé']);
+        return response()->json(['message' => 'Salle de classe creée']);
 
 
 
@@ -52,7 +52,9 @@ class SallesController extends Controller
 
 
     //SUPPRESSION SALLE
-    public function delete($id){
+    public function delete($id, AuditsController $audit){
+        $message = 'Suppresion d\'une Salle de classe '.Salles::findOrFail($id)->nom_salle;
+        $audit->listen('Paramètres', $message, request()->user()->id);
         Salles::findOrFail($id)->delete();
         return response()->json(['message' => 'Salle supprimé']);
     }
@@ -98,8 +100,8 @@ class SallesController extends Controller
             'cl_id' => $fields['cl_id'],
             'ac_id' => $takeAcid,
         ]);
-        $message = 'Modification d\'une Salle de classe';
+        $message = 'Modification d\'une Salle de classe '.$fields['nom_salle'];
         $audit->listen('Paramètres', $message, $request->user()->id);
-        return response()->json(['message' => 'Salle de classe modifié']);
+        return response()->json(['message' => 'Salle de classe modifiée']);
     }
 }

@@ -35,7 +35,7 @@ class ArchcongesController extends Controller
             Workers::where('id', $fields['w_id'])->update([
                 'status' => 'congé',
             ]);
-            $message = 'Congé d\'un employé';
+            $message = 'Congé d\'un employé '.Workers::where('id', $fields['w_id'])->first()->nom." ".Workers::where('id', $fields['w_id'])->first()->prenom." de {$fields['debut']} à {$fields['fin']} de motif: {$fields['motif']}";
             $audit->listen('Employé', $message, $request->user()->id);
             return response()->json(['message' => 'Congé declenché']);
         }
@@ -53,7 +53,7 @@ class ArchcongesController extends Controller
            'status' => 'actif'
        ]);
        $arch->delete();
-        $message = 'Annulation d\'un Congé';
+        $message = 'Annulation d\'un Congé pour '.Workers::findOrFail($arch->w_id)->nom." ".Workers::findOrFail($arch->w_id)->prenom;
         $audit->listen('Employé', $message, $request->user()->id);
        return response()->json(['message' => 'Congé annulé']);
 

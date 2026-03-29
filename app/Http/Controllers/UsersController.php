@@ -65,4 +65,21 @@ POUR LA CREATION D'UN UTILISATEUR
            ]);
        }
     }
+
+    public function updates(Request $request, AuditsController $audit ) {
+        $fields = $request->validate([
+            'name' => 'required|string',
+            'firstname' => 'required|string',
+            'email' => 'required|string',
+//            'role_id' => 'required'
+        ]);
+        if($request->password != ''){
+            $fields['password'] = Hash::make($request->password);
+        }
+        if(User::where('email', $fields['email'])->where('id', '!=', $request->id)->exists()){
+            throw new \Error('Cet email existe déjà');
+        }
+        User::findOrFail($request->id)->update($fields);
+        return \response()->json('Profil modifié');
+    }
 }

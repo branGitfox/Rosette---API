@@ -45,7 +45,7 @@ class DroitsController extends Controller
         }
     }
 
-    public function pay($se_id, $montant, $type){
+    public function pay($se_id, $montant, $type, $revenusMois,  $depensesMois, $audit){
         $droit = Studentdroits::where('se_id', $se_id)->first();
          $st = Sousetudiants::where('id', $se_id)->with('student')->first();
          $old = Sousetudiants::where('et_id', $st->student->id)->count() > 1;
@@ -64,10 +64,13 @@ class DroitsController extends Controller
             if($droit->reste != $mount){
                 throw new \Error('Impossible de payer en totalité, une avance a été payé');
             }
-
-            Studentdroits::where('se_id', $se_id)->update(['reste' => $droit->reste - $mount, 'payed' => 1, 'paid' => $mount]);
             $this->increment(Acs::latest()->first()->id, $mount);
+            $revenusMois->increment(Acs::latest()->first()->id,date('y-m-d'), $mount);
+            Studentdroits::where('se_id', $se_id)->update(['reste' => $droit->reste - $mount, 'payed' => 1, 'paid' => $mount]);
             Droithistos::create(['montant' => $mount, 'dr_id' => $droit->id, 'type' => $type, 'reste' => $droit->reste - $mount]);
+            $message = "Paiement complet de droit de scolarité pour ".$st->student->nom." ".$st->student->prenom;
+            $audit->listen('Financier', $message, request()->user()->id);
+
             return response()->json(['message' => 'Paiement  effectué']);
         }elseif($type == "avance"){
             if($montant > $droit->reste){
@@ -80,7 +83,10 @@ class DroitsController extends Controller
                 }
                 Studentdroits::where('se_id', $se_id)->update(['reste' => $droit->reste - $montant, 'payed' => $payed, 'paid' => $droit->paid+$montant]);
                 $this->increment(Acs::latest()->first()->id, $montant);
+                $revenusMois->increment(Acs::latest()->first()->id,date('y-m-d'), $montant);
                 Droithistos::create(['montant' => $montant, 'dr_id' => $droit->id, 'type' => $type, 'reste' => $droit->reste - $montant]);
+                $message = "Paiement Partiel de droit de scolarité pour ".$st->student->nom." ".$st->student->prenom;
+                $audit->listen('Financier', $message, request()->user()->id);
                 return response()->json(['message' => 'Paiement avance effectué']);
             }
 
@@ -90,7 +96,10 @@ class DroitsController extends Controller
             }else{
                 Studentdroits::where('se_id', $se_id)->update(['reste' => $mount, 'payed' => 0, 'paid' => 0]);
                 $this->decrement(Acs::latest()->first()->id, $droit->paid);
+                $depensesMois->increment(Acs::latest()->first()->id,date('y-m-d'), $droit->paid);
                 Droithistos::create(['montant' => $mount, 'dr_id' => $droit->id, 'type' => $type, 'reste' => $mount]);
+                $message = "Remboursement de droit de scolarité pour ".$st->student->nom." ".$st->student->prenom;
+                $audit->listen('Financier', $message, request()->user()->id);
                 return response()->json(['message' => 'Remboursement effectué']);
             }
         }

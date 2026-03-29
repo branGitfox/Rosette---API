@@ -16,4 +16,7 @@ class Studentdroits extends Model
         return $this->hasMany(Droithistos::class, 'dr_id', 'id');
     }
 
+    public function souset(){
+        return $this->belongsTo(Sousetudiants::class, 'se_id', 'id');
+    }
 }

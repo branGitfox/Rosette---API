@@ -57,14 +57,16 @@ class EcolageController extends Controller
         $moisecolage = Moisecolage::findOrFail($id);
         $classe = Sousetudiants::where('id', $moisecolage->et_id)->with('classe')->first()['classe'];
         $prof = Sousetudiants::where('id', $moisecolage->et_id)->with('student')->first()['student']->enfantProf == 1;
+        $e = Sousetudiants::where('id', $moisecolage->et_id)->with('student')->first();
         if($type == 'complet'){
             if($moisecolage->reste != ($prof ? $classe->ecolage / 2: $classe->ecolage)){
                 throw new \Error('Une avance a deja été payé');
             }else{
-                $moisecolage->update(['payé' => 1, 'reste' => 0, 'paid' => ($prof ? $classe->ecolage / 2: $classe->ecolage)]);
                 $this->increment($request->ac_id,$moisecolage->reste);
+                $moisecolage->update(['payé' => 1, 'reste' => 0, 'paid' => ($prof ? $classe->ecolage / 2: $classe->ecolage)]);
+
                 $revenusmois->increment($request->ac_id, date('y-m-d'),($prof ? $classe->ecolage / 2: $classe->ecolage));
-                $message = "payement  ecolage";
+                $message = "Paiement complet   d'ecolage pour ".$e->student->nom." ".$e->student->prenom;
                 Ecohistos::create(['montant' => ($prof ? $classe->ecolage / 2: $classe->ecolage), 'ec_id' => $id, 'type' => $type, 'reste' => 0]);
 
                 $audit->listen('Financier', $message, $request->user()->id);
@@ -82,7 +84,7 @@ class EcolageController extends Controller
                 $moisecolage->update(['payé' => $paye, 'reste' => $moisecolage->reste - $montant, 'paid' => $moisecolage->paid + $montant]);
                 $this->increment($request->ac_id, $montant);
                 $revenusmois->increment($request->ac_id, date('y-m-d'),$montant);
-                $message = "payement avance ecolage";
+                $message = "Paiement partiel d'ecolage pour ".$e->student->nom." ".$e->student->prenom;
                 $audit->listen('Financier', $message, $request->user()->id);
                 Ecohistos::create(['montant' => $montant, 'ec_id' => $id, 'type' => $type, 'reste' => $moisecolage->reste]);
                 return response()->json(['message' => 'Avance ecolage payé']);
@@ -97,9 +99,8 @@ class EcolageController extends Controller
                 Ecohistos::create(['montant' => $moisecolage->paid, 'ec_id' => $id, 'type' => 'rembourse', 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage]);
                 $depensemois->increment($request->ac_id, date('y-m-d'),$moisecolage->paid);
                 $moisecolage->update(['payé' => 0, 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage, 'paid' => 0]);
-                $message = "Remboursement ecolage";
+                $message = "Remboursement d'ecolage pour ".$e->student->nom." ".$e->student->prenom;
                 $audit->listen('Financier', $message, $request->user()->id);
-//                Ecohistos::create(['montant' => $montant, 'ec_id' => $id, 'type' => $type, 'reste' => $prof?$classe->ecolage / 2: $classe->ecolage]);
                 return response()->json(['message' => 'ecolage remboursé']);
             }
         }

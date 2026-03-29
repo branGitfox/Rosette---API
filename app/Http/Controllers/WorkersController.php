@@ -64,7 +64,7 @@ class WorkersController extends Controller
         }
 
 
-        $message = 'Création d\'un employé';
+        $message = 'Création d\'un employé '.$fields['nom']." ".$fields['prenom'];
         $audit->listen('Employé', $message, $request->user()->id);
         return ['message' => 'Employé  creé'];
     }
@@ -126,15 +126,16 @@ class WorkersController extends Controller
         }
 
 
-        $message = 'Modification d\'un employé';
+        $message = 'Modification d\'un employé '.$fields['nom']." ".$fields['prenom'];
         $audit->listen('Employé', $message, $request->user()->id);
         return ['message' => 'Employé  modifié'];
     }
 
     public function delete($id, AuditsController $audit, Request $request){
-        Workers::findOrFail($id)->delete();
-        $message = 'Suppression d\'un employé';
+        $e = Workers::findOrFail($id);
+        $message = 'Suppression d\'un employé '.$e->nom.' '.$e->prenom;
         $audit->listen('Employé', $message, $request->user()->id);
+        Workers::findOrFail($id)->delete();
         return response()->json(['message' => 'Employé supprimé']);
     }
 
@@ -144,9 +145,12 @@ class WorkersController extends Controller
         return ['prof'=> ['title'=>'Enseignants', 'value' => $prof, 'icon' => 'FaChalkboardTeacher'], 'all' => ['title' => 'Employés', 'value' => $all, 'icon' => 'FaUsers']];
     }
 
-    public function status($id, Request $request){
+    public function status($id, Request $request, AuditsController $audit){
+        $e = Workers::where('id', $id)->first();
         Workers::where('id', $id)->update(['status' => $request->status]);
         Archconges::where('w_id', $id)->latest()->first()->update(['status' => 0]);
+        $message = 'Changement de status de congé d\'un employé '.$e->nom.' '.$e->prenom;
+        $audit->listen('Employé', $message, $request->user()->id);
         return response()->json(['message' => 'Status modifié']);
     }
 

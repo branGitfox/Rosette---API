@@ -57,9 +57,9 @@ class ClassesController extends Controller
             'droit_ancien' => $fields['droit_ancien'],
 
         ]);
-        $message = 'Creation d\'une classe';
+        $message = 'Creation d\'une classe '.$fields['nom_classe'];
         $audit->listen('Paramètres', $message, $request->user()->id);
-        return response()->json(['message' => "classe Creé"]);
+        return response()->json(['message' => "classe Creée"]);
     }
 
     //RECUPERATION HISTORIQUE
@@ -83,9 +83,10 @@ class ClassesController extends Controller
 
         return response()->json(Classes::where('ac_id', $ac_id)->orderBy('created_at', 'desc')->get());
     }
-    public function delete($id){
+    public function delete($id, AuditsController $audit){
+        $message = 'Suppression d\'une classe '.Classes::findOrFail($id)->nom_classe;
+        $audit->listen('Paramètres', $message, request()->user()->id);
         Classes::findOrFail($id)->delete();
-
         return response()->json(['message' => 'Classe supprimé']);
     }
 
@@ -133,8 +134,8 @@ class ClassesController extends Controller
             'droit_ancien' => $fields['droit_ancien'],
 
         ]);
-        $message = 'Modification d\'une classe';
+        $message = 'Modification d\'une classe '.$fields['nom_classe'];
         $audit->listen('Paramètres', $message, $request->user()->id);
-        return response()->json(['message' => "classe modifié"]);
+        return response()->json(['message' => "classe modifiée"]);
     }
 }

@@ -59,7 +59,7 @@ class MoissalairesController extends Controller
 
                         $archive->save($fields['montant'], implode(',', $fields['mois']), 1, $ac_id, $fields['w_id'], $fields['motif']??' ');
                         $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
-                    $message = 'Paiement d\'un employé';
+                    $message = 'Paiement d\'un employé '.Workers::where('id', $fields['w_id'])->first()->nom." ".Workers::where('id', $fields['w_id'])->first()->prenom." pour mois de ".implode(',',$fields['mois']);
                     $audit->listen('Financier', $message, $request->user()->id);
                         return response()->json(['message' => 'Paiment salaire effectué']);
 
@@ -95,7 +95,7 @@ class MoissalairesController extends Controller
 
                 $archive->save($fields['montant'], implode(',', $fields['mois']), $fields['type'], $ac_id, $fields['w_id'], $fields['motif']??' ');
                 $depensemois->increment($ac_id,date('y-m-d'), $fields['montant']*count($fields['mois']));
-                $message = 'Paiement d\'un employé';
+                $message = 'Paiement d\'un employé '.Workers::where('id', $fields['w_id'])->first()->nom." ".Workers::where('id', $fields['w_id'])->first()->prenom." pour mois de ".implode(',',$fields['mois']);
                 $audit->listen('Financier', $message, $request->user()->id);
                 return response()->json(['message' => 'Paiment'.($fields['type']==0?' avance':' reste').' effectué']);
 

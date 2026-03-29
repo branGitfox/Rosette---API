@@ -14,8 +14,8 @@ class DomainesController extends Controller
         ]);
 
             Domaines::create($fields);
-        $message = 'Création d\'une matiere';
-        $audit->listen('Paramètres', $message, $request->user()->id);
+            $message = 'Création d\'une matiere';
+            $audit->listen('Paramètres', $message, $request->user()->id);
             return response()->json(['message' => 'Matiere creé']);
     }
 

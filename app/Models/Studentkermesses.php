@@ -14,4 +14,9 @@ class Studentkermesses extends Model
     public function histo(){
         return $this->hasMany(Droithistos::class, 'dr_id', 'id');
     }
+
+    public function souset(){
+        return $this->belongsTo(Sousetudiants::class, 'se_id', 'id');
+    }
+
 }
