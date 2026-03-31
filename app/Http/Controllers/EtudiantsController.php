@@ -507,15 +507,16 @@ public function unsuspend($id, Request $request, AuditsController $audit){
     }
 
     public function quit($id, Request $request, AuditsController $audit){
+
         $student = Etudiants::where('id', $id)->first();
-        $student->update(['quit' => 1, 'quit_at'=> now()]);
-        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." comme quitté";
+        $student->update(['quit' => 1, 'quit_at'=> now(), 'quit_motif' => $request->motif]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." comme quitté, motif: {$request->motif}";
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve quitté"]);
     }
     public function unquit($id, Request $request, AuditsController $audit){
         $student = Etudiants::where('id', $id)->first();
-        $student->update(['quit' => 0, 'quit_at'=> null]);
+        $student->update(['quit' => 0, 'quit_at'=> null, 'quit_motif' => null]);
         $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." reintegré";
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve reintegré"]);
@@ -523,15 +524,15 @@ public function unsuspend($id, Request $request, AuditsController $audit){
 
     public function fired($id, Request $request, AuditsController $audit){
         $student = Etudiants::where('id', $id)->first();
-        $student->update(['fired' => 1, 'fired_at'=> now()]);
-        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom."comme renvoyé";
+        $student->update(['fired' => 1, 'fired_at'=> now(), 'fired_motif' => $request->motif]);
+        $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom."comme renvoyé , motif: {$request->motif}";
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve renvoyé"]);
     }
 
     public function unfired($id, Request $request, AuditsController $audit){
         $student = Etudiants::where('id', $id)->first();
-        $student->update(['fired' => 0, 'fired_at'=> null]);
+        $student->update(['fired' => 0, 'fired_at'=> null, 'fired_motif' =>null]);
         $message = "Marqué l'etudiant ". $student->nom." ". $student->prenom." reintegré";
         $audit->listen('Etudiants', $message, $request->user()->id);
         return \response()->json(['message' => "Eleve reintegré"]);
