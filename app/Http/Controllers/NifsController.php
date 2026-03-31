@@ -26,7 +26,7 @@ class NifsController extends Controller
     }
 
     public function list(){
-        return response()->json(Nifs::all());
+        return response()->json(Nifs::all()[0]);
     }
 
 

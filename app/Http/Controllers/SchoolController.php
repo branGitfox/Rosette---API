@@ -29,7 +29,7 @@ class SchoolController extends Controller
 
 
     public function show (){
-        return response()->json(School::all());
+        return response()->json(School::all()[0]);
     }
 
     public function destroy(School $school){

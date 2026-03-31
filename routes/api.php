@@ -129,7 +129,7 @@ Route::delete('worker/{id}', [WorkersController::class, 'delete'])->middleware('
 Route::get('worker-count', [WorkersController::class, 'count'])->middleware('auth:sanctum');
 Route::post('worker-pay', [\App\Http\Controllers\MoissalairesController::class, 'pay'])->middleware('auth:sanctum');
 Route::put('worker-status/{id}', [WorkersController::class, 'status'])->middleware('auth:sanctum');
-
+Route::put('workers-charges/{id}', [WorkersController::class, 'updateCharges'])->middleware('auth:sanctum');
 
 //ROUTE POUR PROFESSION
 Route::post('profession-creation', [ProfessionsController::class, 'create'])->middleware('auth:sanctum');

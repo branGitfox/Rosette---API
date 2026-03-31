@@ -18,6 +18,10 @@ class Workers extends Model
         'status',
         'telephone',
         'photo',
+        'cnaps',
+        'irsa',
+        'allocation'
+
     ];
 
     public function profs(){

@@ -169,4 +169,13 @@ class WorkersController extends Controller
         }
 
     }
+
+    public function updateCharges($id, Request $request, AuditsController $audit){
+        $fields = $request->all();
+        $w = Workers::findOrFail($id);
+        $message = 'Ajout de charges pour '.$w->nom.' '.$w->prenom;
+        $audit->listen('Employés', $message, $request->user()->id);
+        $w->update($fields);
+        return response()->json(['message' => 'Charges ajouté']);
+    }
 }
