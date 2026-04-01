@@ -61,6 +61,10 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
+
+        if(Etudiants::where('matricule', $fields['matricule'])->exists()){
+            throw new \Error('Ce matricule existe deja');
+        }
         if($fields['sa_id'] != 0&&Sousetudiants::where('sa_id', $fields['sa_id'])->count() == Salles::where('id', $fields['sa_id'])->first()->effectif){
             throw new \Error('La salle a atteint son effectif');
         }else{
@@ -150,7 +154,7 @@ class EtudiantsController extends Controller
     //POUR CREER UN MATRICULE UNIQUE D'UN ETUDIANT
 
     public function matricule() {
-        return response()->json(['matricule' => 'ROS'.date('y').'-'.(DB::table('etudiants')->latest()->first()?->id??'0')]);
+        return response()->json(['matricule' => 'ROS'.date('y').'-'.(DB::table('etudiants')->count() == 0?1:DB::table('etudiants')->count() + 1 )]);
     }
 
 
@@ -176,7 +180,8 @@ class EtudiantsController extends Controller
         $salle = request()->query('salle');
         $q = request()->query('q');
         $mention = request()->query('mention');
-        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
+        $level = request()->query('level');
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->yearNote($year)->level($level)->mentionNote($mention, $level)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage'])  ])->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
     //RECUPERATION D'UN ETUDIANT
@@ -222,7 +227,9 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
-
+    if(Etudiants::where('id', '!=', $id)->where('matricule', $fields['matricule'])->exists()){
+        throw new \Error('Ce matricule existe deja');
+    }
         $sous_et = Sousetudiants::where('et_id', $request->id)->latest()->first()->id;
         $moisecolage = Moisecolage::where('et_id', $sous_et)->where('payé', 1)->exists();
         //verification s'il y a au moins un mois d'ecolage payé

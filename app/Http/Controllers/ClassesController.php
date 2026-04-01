@@ -20,13 +20,14 @@ class ClassesController extends Controller
             'kermesse' => 'required|integer|max:999999999',
             'droit_ancien' => 'required|integer|max:999999999',
             'kermesse_ancien' => 'required|integer|max:999999999',
+            'niveau' => 'required|string',
 
         ],
             [
                 'nom_classe.required' => 'Nom de la classe obligatoire',
                 'ac_id.required' => 'Année scolaire obligatoire',
                 'ac_id.exists' => 'Cette année scolaire n\'existe pas',
-
+                'niveau.required' => 'Niveau obligatoire',
                 'ecolage.required' => 'Ecolage obligatoire',
                 'ecolage.integer' => 'Ecolage doit être un chiffre',
                 'ecolage.max' => 'Ecolage ne doit pas dépasser 999999999',
@@ -55,6 +56,7 @@ class ClassesController extends Controller
             'kermesse' => $fields['kermesse'],
             'kermesse_ancien' => $fields['kermesse_ancien'],
             'droit_ancien' => $fields['droit_ancien'],
+            'niveau' => $fields['niveau'],
 
         ]);
         $message = 'Creation d\'une classe '.$fields['nom_classe'];
@@ -97,12 +99,14 @@ class ClassesController extends Controller
         'ecolage' => 'required|integer|max:999999999',
         'droit' => 'required|integer|max:999999999',
         'kermesse' => 'required|integer|max:999999999',
-            'droit_ancien' => 'required|integer|max:999999999',
-            'kermesse_ancien' => 'required|integer|max:999999999',
+        'droit_ancien' => 'required|integer|max:999999999',
+        'kermesse_ancien' => 'required|integer|max:999999999' ,
+            'niveau' => 'required|string'
     ],
         [
             'nom_classe.required' => 'Nom de la classe obligatoire',
             'ac_id.required' => 'Année scolaire obligatoire',
+            'niveau.required' => 'Niveau obligatoire',
             'ac_id.exists' => 'Cette année scolaire n\'existe pas',
 
             'ecolage.required' => 'Ecolage obligatoire',
@@ -132,6 +136,7 @@ class ClassesController extends Controller
             'kermesse' => $fields['kermesse'],
             'kermesse_ancien' => $fields['kermesse_ancien'],
             'droit_ancien' => $fields['droit_ancien'],
+            'niveau' => $fields['niveau'],
 
         ]);
         $message = 'Modification d\'une classe '.$fields['nom_classe'];

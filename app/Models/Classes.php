@@ -13,7 +13,8 @@ class Classes extends Model
         'droit',
         'kermesse',
         'droit_ancien',
-        'kermesse_ancien'
+        'kermesse_ancien',
+        'niveau'
     ];
 
     public function acs() {

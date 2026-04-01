@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sousetudiants', function (Blueprint $table) {
-            $table->decimal('noteTotal')->default(0)->nullable();
+        Schema::table('classes', function (Blueprint $table) {
+            $table->enum('niveau', ['prescolaire', 'primaire', 'college'])->default('primaire');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sousetudiants', function (Blueprint $table) {
+        Schema::table('classes', function (Blueprint $table) {
             //
         });
     }
