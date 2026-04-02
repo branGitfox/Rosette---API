@@ -14,7 +14,10 @@ class Classes extends Model
         'kermesse',
         'droit_ancien',
         'kermesse_ancien',
-        'niveau'
+        'niveau',
+        'created_at',
+        'updated_at',
+
     ];
 
     public function acs() {

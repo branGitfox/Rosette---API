@@ -10,7 +10,9 @@ class Salles extends Model
       'nom_salle',
         'effectif',
       'ac_id',
-      'cl_id'
+      'cl_id',
+        'created_at',
+        'updated_at',
     ];
 
     public function classes(){

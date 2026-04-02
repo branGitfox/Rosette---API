@@ -48,17 +48,43 @@ class SousetudiantsController extends Controller
         $moyenne_admission = Admissions::where('ac_id', $sous_etudiant_updateed->ac_id)->first();
 
         if($sous_etudiant_updateed->note1 && $sous_etudiant_updateed->note2&&$sous_etudiant_updateed->note3&&$sous_etudiant_updateed->noteTotal){
-            if($sous_etudiant_updateed->noteTotal >= $moyenne_admission->note){
-                $status = 'admis';
+                $s = Sousetudiants::where('id', $sous_etudiant_updateed->id)->with('classe')->first();
+                if($s->classe->niveau=='prescolaire'){
+                    if($sous_etudiant_updateed->noteTotal >=$moyenne_admission->note_pre){
+                        $status = 'admis';
+                        $by_delib = false;
+                    }else{
+                        if($sous_etudiant_updateed->noteTotal >=$moyenne_admission->par_delib_pre){
+                            $status = 'admis';
+                            $by_delib = true;
+                        }else{
+                            $status = 'redoublé';
+                            $by_delib = false;
+                        }
+                    }
+                }else{
+                    if($sous_etudiant_updateed->noteTotal >=$moyenne_admission->note){
+                        $status = 'admis';
+                        $by_delib = false;
+                    }else{
+                        if($sous_etudiant_updateed->noteTotal >= $moyenne_admission->par_delib){
+                            $status = 'admis';
+                            $by_delib = true;
+                        }else{
+                            $status = 'redoublé';
+                            $by_delib = false;
+                        }
+                    }
+                }
+
             }else{
-                $status = 'redoublé';
-            }
-
-
-        }else{
-            $status='cours';
+                    $status = 'cours';
+                    $by_delib = false;
         }
-        Sousetudiants::findOrFail($id)->update(['status_admissions' => $status]);
+
+
+
+        Sousetudiants::findOrFail($id)->update(['status_admissions' => $status, 'by_delib' =>$by_delib]);
         $message = 'Modification note d\'un etudiant';
         $audit->listen('Étudiants', $message, $request->user()->id);
         return response()->json(['message' => 'note modifié']);

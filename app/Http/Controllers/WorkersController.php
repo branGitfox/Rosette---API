@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Acs;
 use App\Models\Archconges;
+use App\Models\Ecolages;
 use App\Models\Workers;
 use Error;
 use Illuminate\Http\Request;
@@ -174,8 +175,28 @@ class WorkersController extends Controller
         $fields = $request->all();
         $w = Workers::findOrFail($id);
         $message = 'Ajout de charges pour '.$w->nom.' '.$w->prenom;
-        $audit->listen('Employés', $message, $request->user()->id);
+        $audit->listen('Employé', $message, $request->user()->id);
         $w->update($fields);
         return response()->json(['message' => 'Charges ajouté']);
     }
+
+    public function impot($id, Request $request, AuditsController $audit, DepensesMoisController $depensesMoisController){
+        $w = Workers::findOrFail($id);
+        $salaire_base = $w->salaire_base;
+        $total = $salaire_base*0.08 + $salaire_base*0.01;
+        $ac_id = Acs::latest()->first()->id;
+        $solde_ecolage = Ecolages::where('ac_id', $ac_id)->first()->solde;
+        if($solde_ecolage < $total){
+            throw new Error('Le solde d\'ecolage est insuffisante');
+        }
+
+        Ecolages::where('ac_id', $ac_id)->update(['solde' => $solde_ecolage - $total]);
+        $depensesMoisController->increment($ac_id, date('y-m-d'), $total);
+        $format = number_format($total,0, '', ' ');
+        $message = "Paiement de CNAPS(1%) et FMFP(8%) au total($format) Ar pour {$w->nom} {$w->prenom}";
+        $audit->listen('Employé', $message, $request->user()->id);
+        return response()->json(['message' => 'Paiement reussi']);
+
+    }
 }
+

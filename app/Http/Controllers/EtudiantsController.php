@@ -11,6 +11,7 @@ use App\Models\Etudiants;
 
 use App\Models\Kermessehistos;
 use App\Models\Moisecolage;
+use App\Models\Monthbylevels;
 use App\Models\Recues;
 use App\Models\Salles;
 use App\Models\Sousetudiants;
@@ -126,9 +127,15 @@ class EtudiantsController extends Controller
             Studentdroits::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount, 'payed' => 0, 'paid'=>0]);
             Studentkermesses::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount2, 'payed' => 0, 'paid'=>0]);
 
-            $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
-
-            foreach($mois_list->mois as  $m){
+            $monthbylevels = Monthbylevels::latest()->first();
+            if($classe->niveau == 'prescolaire'){
+                $mois_list = explode(',', $monthbylevels->prescolaire);
+            }elseif($classe->niveau == 'primaire'){
+                $mois_list = explode(',', $monthbylevels->primaire);
+            }else{
+                $mois_list = explode(',', $monthbylevels->college);
+            }
+            foreach($mois_list as  $m){
 //                if($debut_mois === $m->mois){
 //                    $payé = true;
 //                    $revenusmois->increment($ac_id,$m->mois, ($montant_ecolage / ($enfant_prof==1?2:1))+$montant_droit+$montant_kermesse);
@@ -136,7 +143,7 @@ class EtudiantsController extends Controller
 //                    $payé = false;
 //                }
 
-                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false, ($classe->ecolage / ($enfant_prof?2:1)), 0);
+                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m, false, ($classe->ecolage / ($enfant_prof?2:1)), 0);
             }
 
 
@@ -163,7 +170,7 @@ class EtudiantsController extends Controller
     public function list(){
         $lignes = request()->query('lines');
         $sexe = request()->query('sexe');
-        $year = request()->query('annee');
+        $year =request()->query('annee');
         $classe = request()->query('classe');
         $salle = request()->query('salle');
         $q = request()->query('q');
@@ -342,18 +349,27 @@ public function deletes($id, Request $request, AuditsController $audit) {
 //         $droit->increment($ac_id, $montant_droit);
 //         $kermesse->increment($ac_id, $montant_kermesse);
 
-         $mois_list = Acs::with('mois')->where('id', $ac_id)->first();
 
-         foreach ($mois_list->mois as $m) {
-//             if ($debut_mois === $m->mois) {
-////                 $revenusmois->increment($ac_id,$m->mois, $ecolage_devide+$montant_droit+$montant_kermesse);
-//                 $payé = true;
-//             } else {
-////                 $payé = false;
-//             }
 
-             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m->mois, false, ($classe->ecolage / ($etudiant->enfantProf==1?2:1)), 0);
+         $monthbylevels = Monthbylevels::latest()->first();
+         if($classe->niveau == 'prescolaire'){
+             $mois_list = explode(',', $monthbylevels->prescolaire);
+         }elseif($classe->niveau == 'primaire'){
+             $mois_list = explode(',', $monthbylevels->primaire);
+         }else{
+             $mois_list = explode(',', $monthbylevels->college);
          }
+         foreach($mois_list as  $m){
+//                if($debut_mois === $m->mois){
+//                    $payé = true;
+//                    $revenusmois->increment($ac_id,$m->mois, ($montant_ecolage / ($enfant_prof==1?2:1))+$montant_droit+$montant_kermesse);
+//                }else{
+//                    $payé = false;
+//                }
+
+             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m, false, ($classe->ecolage / ($etudiant->enfantProf==1?2:1)), 0);
+         }
+
 
          $sousetudiant->update(['transfert' => true]);
          $message = 'Reinscription d\'un etudiant '.$etudiant->nom." ".$etudiant->prenom;

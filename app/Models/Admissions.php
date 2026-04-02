@@ -8,7 +8,12 @@ class Admissions extends Model
 {
     protected $fillable = [
         'note',
-        'ac_id'
+        'ac_id',
+        'note_pre',
+        'par_delib',
+        'par_delib_pre',
+
+
     ];
 
     public function acs() {

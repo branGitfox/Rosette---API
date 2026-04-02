@@ -17,6 +17,7 @@ class Sousetudiants extends Model
         'transfert',
         'noteTotal',
         'status_admissions',
+        'by_delib',
     ];
 
     public function classe(){

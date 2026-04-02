@@ -15,6 +15,7 @@ use App\Http\Controllers\IdentifysController;
 use App\Http\Controllers\KermessesController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\MoisecolageController;
+use App\Http\Controllers\MonthbylevelsController;
 use App\Http\Controllers\NifsController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfessionsController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WorkersController;
 use App\Models\Acs;
 use App\Models\Classes;
+use App\Models\Etudiants;
 use App\Models\Salles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -130,7 +132,7 @@ Route::get('worker-count', [WorkersController::class, 'count'])->middleware('aut
 Route::post('worker-pay', [\App\Http\Controllers\MoissalairesController::class, 'pay'])->middleware('auth:sanctum');
 Route::put('worker-status/{id}', [WorkersController::class, 'status'])->middleware('auth:sanctum');
 Route::put('workers-charges/{id}', [WorkersController::class, 'updateCharges'])->middleware('auth:sanctum');
-
+Route::post('impot/{id}', [WorkersController::class, 'impot'])->middleware('auth:sanctum');
 //ROUTE POUR PROFESSION
 Route::post('profession-creation', [ProfessionsController::class, 'create'])->middleware('auth:sanctum');
 Route::put('profession-update/{id}', [ProfessionsController::class, 'updates'])->middleware('auth:sanctum');
@@ -254,6 +256,10 @@ Route::get('transfert-data', function () {
                 'kermesse' => $classe->kermesse,
                 'droit_ancien' => $classe->droit_ancien,
                 'kermesse_ancien' => $classe->kermesse_ancien,
+//                'created_at' => $classe->created_at,
+//                'updated_at' => $classe->updated_at,
+                'niveau' => $classe->niveau,
+
             ]);
 
             foreach ($classe->salles as $salle) {
@@ -264,6 +270,9 @@ Route::get('transfert-data', function () {
                     'cl_id' => $last_classe,
                     'nom_salle' => $salle->nom_salle,
                     'effectif' => $salle->effectif,
+//                    'created_at' => $salle->created_at,
+//                    'updated_at' => $salle->updated_at,
+
                 ]);
             }
         }
@@ -297,3 +306,16 @@ Route::post('/roles', [RolesController::class, 'create'])->middleware('auth:sanc
 Route::put('/roles/{roles}', [RolesController::class, 'edit'])->middleware('auth:sanctum');
 Route::delete('/roles/{roles}', [RolesController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/roles/{roles}', [RolesController::class, 'show'])->middleware('auth:sanctum');
+
+//MOIS D"ANNEE SCOLAIRE
+
+Route::get('monthbylevels/{id}', [MonthbylevelsController::class, 'show'])->middleware('auth:sanctum');
+Route::post('monthbylevels', [MonthbylevelsController::class, 'creates'])->middleware('auth:sanctum');
+Route::put('monthbylevels/{id}', [MonthbylevelsController::class, 'updates'])->middleware('auth:sanctum');
+Route::delete('monthbylevels/{id}', [MonthbylevelsController::class, 'deletes'])->middleware('auth:sanctum');
+
+
+Route::get('isold/{id}', function($id){
+    $e = Etudiants::where('id', $id)->with('sousetudiants')->first();
+    return response()->json($e->count());
+})->middleware('auth:sanctum');

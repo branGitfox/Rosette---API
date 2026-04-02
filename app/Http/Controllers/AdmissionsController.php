@@ -14,11 +14,20 @@ class AdmissionsController extends Controller
     public function create(Request $request, AuditsController $audit){
         $fields =$request->validate([
             'note' => 'required|integer',
-            'ac_id' => 'required'
+            'ac_id' => 'required',
+            'note_pre' => 'required|integer',
+            'par_delib' => 'required|integer',
+            'par_delib_pre' => 'required|integer',
         ],
         [
             'note.required' => 'Note est requis',
             'note.integer' => 'Note doit etre un entier',
+            'note_pre.required' => 'Note prescolaire est requis',
+            'note_pre.integer' => 'Note prescolaire doit etre un entier',
+            'par_delib.required' => 'deliberation  est requise',
+            'par_delib.integer' => 'Deliberation  doit etre un entier',
+            'par_delib_pre.required' => 'deliberation prescolaire est requise',
+            'par_delib_pre.integer' => 'Deliberation prescolaire doit etre un entier',
             'ac_id.required' => 'Annee scolaire est requis',
         ]);
         $ac_id = Acs::findOrFail($fields['ac_id'])->id;
@@ -31,6 +40,9 @@ class AdmissionsController extends Controller
             Admissions::create([
                 'note' => $fields['note'],
                 'ac_id' => $takeAcId,
+                'note_pre' => $fields['note_pre'],
+                'par_delib' => $fields['par_delib'],
+                'par_delib_pre' => $fields['par_delib_pre'],
             ]);
 
             $message = 'Creation d\'une Admission';
@@ -51,18 +63,30 @@ class AdmissionsController extends Controller
     public function updates($id, Request $request, AuditsController $audit){
         $fields =$request->validate([
             'note' => 'required|integer',
-            'ac_id' => 'required'
+            'ac_id' => 'required',
+            'note_pre' => 'required|integer',
+            'par_delib' => 'required|integer',
+            'par_delib_pre' => 'required|integer',
         ],
-            [
-                'note.required' => 'Note est requis',
-                'note.integer' => 'Note doit etre un entier',
-                'ac_id.required' => 'Annee scolaire est requis',
+        [
+            'note.required' => 'Note est requis',
+            'note.integer' => 'Note doit etre un entier',
+            'note_pre.required' => 'Note prescolaire est requis',
+            'note_pre.integer' => 'Note prescolaire doit etre un entier',
+            'par_delib.required' => 'deliberation  est requise',
+            'par_delib.integer' => 'Deliberation  doit etre un entier',
+            'par_delib_pre.required' => 'deliberation prescolaire est requise',
+            'par_delib_pre.integer' => 'Deliberation prescolaire doit etre un entier',
+            'ac_id.required' => 'Annee scolaire est requis',
             ]);
 
             $takeAcId = Acs::where('id',$fields['ac_id'])->first()->id;
             Admissions::findOrFail($id)->update([
                 'note' => $fields['note'],
                 'ac_id' => $takeAcId,
+                'note_pre' => $fields['note_pre'],
+                'par_delib' => $fields['par_delib'],
+                'par_delib_pre' => $fields['par_delib_pre'],
             ]);
 
             $message = 'Modification d\'une Admission';
