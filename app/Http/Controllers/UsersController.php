@@ -71,8 +71,13 @@ POUR LA CREATION D'UN UTILISATEUR
             'name' => 'required|string',
             'firstname' => 'required|string',
             'email' => 'required|string',
-//            'role_id' => 'required'
+            'role_id' => ''
         ]);
+
+        if($request->role_id){
+            $fields['role_id'] = $request->role_id;
+        }
+
         if($request->password != ''){
             $fields['password'] = Hash::make($request->password);
         }
@@ -82,4 +87,10 @@ POUR LA CREATION D'UN UTILISATEUR
         User::findOrFail($request->id)->update($fields);
         return \response()->json('Profil modifié');
     }
+
+    public function users_list(){
+        return response()->json(User::with('roles')->get());
+    }
+
+
 }

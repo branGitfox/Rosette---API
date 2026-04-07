@@ -568,7 +568,7 @@ public function unsuspend($id, Request $request, AuditsController $audit){
             'type' => 'required',
             'se_id' => 'required',
             'ac_id' => 'required',
-        ]);
+        ], ['montant.required' => "Le montant est requis"]);
         $droit->pay($fields['se_id'], $fields['montant'], $fields['type'], $revenusmois, $depensesmois, $audit);
 
 
@@ -581,7 +581,9 @@ public function unsuspend($id, Request $request, AuditsController $audit){
             'type' => 'required',
             'se_id' => 'required',
             'ac_id' => 'required',
-        ]);
+        ],
+        ['montant.required' => "Le montant est requis"]
+        );
         $kermesse->pay($fields['se_id'], $fields['montant'], $fields['type'], $revenusmois, $depensesmois, $audit);
         return \response()->json(['message' => "Paiement {$fields['type']}"]);
     }

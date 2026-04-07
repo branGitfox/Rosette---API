@@ -37,7 +37,7 @@ Route::get('/user', function (Request $request) {
     return $request->user()->load(['roles' => fn($q) => $q->with('pages')]);
 })->middleware('auth:sanctum');
 Route::put('user/{id}', [UsersController::class, 'updates'])->middleware('auth:sanctum');
-
+Route::get('users-list', [UsersController::class, 'users_list'])->middleware('auth:sanctum');
 //ROUTE POUR UTILISATEUR
 Route::post('/users-creation', [UsersController::class, 'creation'])->middleware('auth:sanctum');
 Route::post('/users-connexion', [UsersController::class, 'connexion']);
@@ -256,8 +256,8 @@ Route::get('transfert-data', function () {
                 'kermesse' => $classe->kermesse,
                 'droit_ancien' => $classe->droit_ancien,
                 'kermesse_ancien' => $classe->kermesse_ancien,
-//                'created_at' => $classe->created_at,
-//                'updated_at' => $classe->updated_at,
+                'created_at' => $classe->created_at,
+                'updated_at' => $classe->updated_at,
                 'niveau' => $classe->niveau,
 
             ]);
@@ -270,8 +270,8 @@ Route::get('transfert-data', function () {
                     'cl_id' => $last_classe,
                     'nom_salle' => $salle->nom_salle,
                     'effectif' => $salle->effectif,
-//                    'created_at' => $salle->created_at,
-//                    'updated_at' => $salle->updated_at,
+                    'created_at' => $salle->created_at,
+                    'updated_at' => $salle->updated_at,
 
                 ]);
             }
