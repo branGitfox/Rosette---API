@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('admissions', function (Blueprint $table) {
-                $table->integer('note_pre')->default(0)->nullable();
-                $table->integer('par_delib')->default(0)->nullable();
-                $table->integer('par_delib_pre')->default(0)->nullable();
+                $table->string('note_pre')->default(0)->nullable();
+                $table->string('par_delib')->default(0)->nullable();
+                $table->string('par_delib_pre')->default(0)->nullable();
         });
     }
 
