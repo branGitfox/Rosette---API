@@ -62,7 +62,9 @@ class EtudiantsController extends Controller
             'cl_id.required' => 'La classe est obligatoire.',
             'sa_id.required' => 'La salle est obligatoire.',
         ]);
-
+        if(Monthbylevels::all()->count() == 0){
+            throw new \Error("mois d'année scolaire non defini");
+        }
         if(Etudiants::where('matricule', $fields['matricule'])->exists()){
             throw new \Error('Ce matricule existe deja');
         }
@@ -128,6 +130,7 @@ class EtudiantsController extends Controller
             Studentkermesses::create([ 'se_id' => $last_sousetudiant, 'reste' => $mount2, 'payed' => 0, 'paid'=>0]);
 
             $monthbylevels = Monthbylevels::latest()->first();
+
             if($classe->niveau == 'prescolaire'){
                 $mois_list = explode(',', $monthbylevels->prescolaire);
             }elseif($classe->niveau == 'primaire'){
@@ -315,7 +318,12 @@ public function deletes($id, Request $request, AuditsController $audit) {
 
 //REINSCRIPTION ETUDIANT
  public function reinscriptions(Request $request, SousetudiantsController $sousetudiants_instance,AuditsController $audit, EcolageController $ecolage, DroitsController $droit, KermessesController $kermesse, MoisecolageController $moisecolage, RevenusMoisController $revenusmois){
-     if(Sousetudiants::where('sa_id', $request->sa_id)->count() == Salles::where('id', $request->sa_id)->first()->effectif){
+
+        if(Monthbylevels::all()->count() == 0){
+         throw new \Error("mois d'année scolaire non defini");
+        }
+
+        if(Sousetudiants::where('sa_id', $request->sa_id)->count() == Salles::where('id', $request->sa_id)->first()->effectif){
          throw new \Error('La salle a atteint son effectif');
      }else {
          $etudiant = Etudiants::findOrFail($request->etid);
@@ -352,6 +360,8 @@ public function deletes($id, Request $request, AuditsController $audit) {
 
 
          $monthbylevels = Monthbylevels::latest()->first();
+
+
          if($classe->niveau == 'prescolaire'){
              $mois_list = explode(',', $monthbylevels->prescolaire);
          }elseif($classe->niveau == 'primaire'){

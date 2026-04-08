@@ -51,6 +51,7 @@ class MonthbylevelsController extends Controller
     }
 
     public function deletes($id, AuditsController $audit){
+
         Monthbylevels::findOrFail($id)->delete();
         $message = "Mois d'année scolaire supprimé";
         $audit->listen('Paramètres', $message, request()->user()->id);
@@ -58,6 +59,6 @@ class MonthbylevelsController extends Controller
     }
 
     public function show(){
-         return response()->json(Monthbylevels::latest()->first());
+         return response()->json(Monthbylevels::latest()->get());
     }
 }

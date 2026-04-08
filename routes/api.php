@@ -309,7 +309,7 @@ Route::get('/roles/{roles}', [RolesController::class, 'show'])->middleware('auth
 
 //MOIS D"ANNEE SCOLAIRE
 
-Route::get('monthbylevels/{id}', [MonthbylevelsController::class, 'show'])->middleware('auth:sanctum');
+Route::get('monthbylevels', [MonthbylevelsController::class, 'show'])->middleware('auth:sanctum');
 Route::post('monthbylevels', [MonthbylevelsController::class, 'creates'])->middleware('auth:sanctum');
 Route::put('monthbylevels/{id}', [MonthbylevelsController::class, 'updates'])->middleware('auth:sanctum');
 Route::delete('monthbylevels/{id}', [MonthbylevelsController::class, 'deletes'])->middleware('auth:sanctum');
