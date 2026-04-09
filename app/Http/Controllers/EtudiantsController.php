@@ -146,7 +146,7 @@ class EtudiantsController extends Controller
 //                    $payé = false;
 //                }
 
-                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m, false, ($classe->ecolage / ($enfant_prof?2:1)), 0);
+                $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, trim($m), false, ($classe->ecolage / ($enfant_prof?2:1)), 0);
             }
 
 
@@ -377,7 +377,7 @@ public function deletes($id, Request $request, AuditsController $audit) {
 //                    $payé = false;
 //                }
 
-             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, $m, false, ($classe->ecolage / ($etudiant->enfantProf==1?2:1)), 0);
+             $moisecolage->initializeMoisecolage($ac_id, $last_sousetudiant, trim($m), false, ($classe->ecolage / ($etudiant->enfantProf==1?2:1)), 0);
          }
 
 
