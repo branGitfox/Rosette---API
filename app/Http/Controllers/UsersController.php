@@ -92,5 +92,16 @@ POUR LA CREATION D'UN UTILISATEUR
         return response()->json(User::with('roles')->get());
     }
 
+    public function checkPassword(Request $request){
+        $password = $request->password;
+        if (Hash::check($password, $request->user()->getAuthPassword())){
+            return response()->json(true);
+        }
+
+        return response()->json(false);
+    }
+
+
+
 
 }

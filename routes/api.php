@@ -28,6 +28,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WorkersController;
 use App\Models\Acs;
 use App\Models\Classes;
+use App\Models\Ecolages;
 use App\Models\Etudiants;
 use App\Models\Salles;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ Route::get('users-list', [UsersController::class, 'users_list'])->middleware('au
 //ROUTE POUR UTILISATEUR
 Route::post('/users-creation', [UsersController::class, 'creation'])->middleware('auth:sanctum');
 Route::post('/users-connexion', [UsersController::class, 'connexion']);
-
+Route::post('checkpassword', [UsersController::class, 'checkPassword'])->middleware('auth:sanctum');
 
 //ROUTE POUR ANNEE SCOLAIRE
 Route::post('/ac-creation', [AcController::class, 'create'])->middleware('auth:sanctum');
@@ -49,6 +50,38 @@ Route::get('/ac-list', [AcController::class, 'list'])->middleware('auth:sanctum'
 Route::get('/ac-list-no-month', [AcController::class, 'listAnnee'])->middleware('auth:sanctum');
 Route::delete('/ac-delete/{id}', [AcController::class, 'delete'])->middleware('auth:sanctum');
 
+Route::delete('depot/{id}', function ($id, Request $request, AuditsController $audit, RevenusMoisController  $revenus) {
+    $ajouts = \App\Models\Ajouts::findOrFail($id);
+    $revenus->increment(Acs::latest()->first()->id, date('y-m-d'), -1 *($ajouts->droit+$ajouts->ecolage+$ajouts->kermesse));
+    $ecolage = Ecolages::where('ac_id', Acs::latest()->first()->id)->first();
+    $droit = \App\Models\Droits::where('ac_id', Acs::latest()->first()->id)->first();
+    $kermesse = \App\Models\Kermesses::where('ac_id', Acs::latest()->first()->id)->first();
+
+    Ecolages::where('ac_id', Acs::latest()->first()->id)->update(['solde' => $ecolage->solde - $ajouts->ecolage]);
+    \App\Models\Droits::where('ac_id', Acs::latest()->first()->id)->update(['solde' => $droit->solde - $ajouts->droit]);
+    \App\Models\Kermesses::where('ac_id', Acs::latest()->first()->id)->update(['solde' => $kermesse->solde - $ajouts->kermesse]);
+    $audit->listen('Financier', "suppression d'historique de depot: ecolage-{$ajouts->ecolage}, droit-{$ajouts->droit}, kermesse-{$ajouts->kermesse}", $request->user()->id);
+    $ajouts->delete();
+    return response()->json(['message' => "Historique supprimé"]);
+
+})->middleware('auth:sanctum');
+
+
+Route::delete('retrait/{id}', function ($id, Request $request, AuditsController $audit, DepensesMoisController  $depenses) {
+    $ajouts = \App\Models\Moins::findOrFail($id);
+    $depenses->increment(Acs::latest()->first()->id, date('y-m-d'), -1 * ($ajouts->droit+$ajouts->ecolage+$ajouts->kermesse));
+    $ecolage = Ecolages::where('ac_id', Acs::latest()->first()->id)->first();
+    $droit = \App\Models\Droits::where('ac_id', Acs::latest()->first()->id)->first();
+    $kermesse = \App\Models\Kermesses::where('ac_id', Acs::latest()->first()->id)->first();
+
+    Ecolages::where('ac_id', Acs::latest()->first()->id)->update(['solde' => $ecolage->solde + $ajouts->ecolage]);
+    \App\Models\Droits::where('ac_id', Acs::latest()->first()->id)->update(['solde' => $droit->solde + $ajouts->droit]);
+    \App\Models\Kermesses::where('ac_id', Acs::latest()->first()->id)->update(['solde' => $kermesse->solde + $ajouts->kermesse]);
+    $audit->listen('Financier', "suppression d'historique de retrait: ecolage-{$ajouts->ecolage}, droit-{$ajouts->droit}, kermesse-{$ajouts->kermesse}", $request->user()->id);
+    $ajouts->delete();
+    return response()->json(['message' => "Historique supprimé"]);
+
+})->middleware('auth:sanctum');
 
 //ROUTE POUR CLASSES
 Route::post('/classe-creation', [ClassesController::class, 'create'])->middleware('auth:sanctum');

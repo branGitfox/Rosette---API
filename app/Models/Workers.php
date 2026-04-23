@@ -20,7 +20,10 @@ class Workers extends Model
         'photo',
         'cnaps',
         'irsa',
-        'allocation'
+        'allocation',
+        'matricule',
+        'classification',
+        'indice'
 
     ];
 

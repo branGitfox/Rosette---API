@@ -17,7 +17,7 @@ class WorkersController extends Controller
             'nom' => 'required',
             'prenom' => 'required',
             'sexe' => 'required',
-            'email' => 'unique:workers',
+            'email' => '',
             'adresse' => 'required',
             'salaire_base' => 'required|max:999999999',
             'p_id' => 'required|exists:professions,id',
