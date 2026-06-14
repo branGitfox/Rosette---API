@@ -428,7 +428,7 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $mention = request()->query('mention');
         $ecolage = request()->query('ecolage');
         $mois = request()->query('mois');
-        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->moisecolage($mois, $ecolage)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage', 'studentdroit'])])->orderBy('created_at', 'desc')->paginate($lignes));
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->moisecolage($mois, $ecolage, $year)->yearNote($year)->mention($mention)->classe($classe)->salle($salle)->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)->with(['classe', 'salle', 'annee', 'ecolage', 'studentdroit'])])->orderBy('created_at', 'desc')->paginate($lignes));
     }
 
     public function list_inactif(){
