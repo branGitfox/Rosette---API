@@ -456,12 +456,12 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $q = request()->query('q');
         $payed = request()->query('payed');
 
-        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed){
-            return $q->whereHas('studentdroit', function($q) use ($payed){
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed, $year){
+            return $q->whereHas('studentdroit', function($q) use ($payed, $year){
                 if($payed=='0'){
                     return $q;
                 }
-                return $q->where('payed', $payed==2?0:$payed);
+                return $q->where('payed', $payed==2?0:$payed)->where('ac_id', $year);
             });
         })->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)
 
@@ -480,12 +480,12 @@ public function unsuspend($id, Request $request, AuditsController $audit){
         $q = request()->query('q');
         $payed = request()->query('payed');
 
-        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed){
-            return $q->whereHas('studentkr', function($q) use ($payed){
+        return response()->json(Etudiants::where('nom', 'like', '%'.$q.'%')->orWhere('prenom', 'like', '%'.$q.'%')->isNotQuitAndNotFired()->sexe($sexe)->yearNote($year)->classe($classe)->salle($salle)->WhereHas('sousetudiants', function($q) use ($payed, $year){
+            return $q->whereHas('studentkr', function($q) use ($payed, $year){
                 if($payed=='0'){
                     return $q;
                 }
-                return $q->where('payed', $payed==2?0:$payed);
+                return $q->where('payed', $payed==2?0:$payed)->where('ac_id', $year);
             });
         })->with(['sousetudiants' => fn($q) => $q->where('ac_id', $year)
 
