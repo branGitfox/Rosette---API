@@ -10,6 +10,7 @@ use App\Models\Sousetudiants;
 use App\Models\Studentdroits;
 use App\Models\Studentkermesses;
 use Illuminate\Http\Request;
+use mysql_xdevapi\Exception;
 
 class KermessesController extends Controller
 {
@@ -59,7 +60,7 @@ class KermessesController extends Controller
             throw new \Error('Impossible de payer le droit');
         }
         $classe = Sousetudiants::where('id', $se_id)->with('classe')->first()['classe'];
-        $mount =$old ? $classe->kermesse_ancien: $classe->kermesse;
+        $mount = $old ? $classe->kermesse_ancien: $classe->kermesse;
         if(!$mount){
             throw new \Error('Impossible de payer le droit');
         }
@@ -116,6 +117,9 @@ class KermessesController extends Controller
     public function autopay($id, AuditsController $audit){
 
         $payed = Studentkermesses::where('id', $id)->first()->payed;
+        if (Studentkermesses::where('id', $id)->first()->paid !== 0){
+            throw new \Exception("impossible d'annuler le paiement");
+        }
         Studentkermesses::findOrFail($id)->update(['payed' => $payed == 1?0:1]);
         $st = Studentkermesses::where('id', $id)->with(['souset' => fn($q) => $q->with('student')])->first();
         $message = ($payed ==1? "Annulation":"Paiement")." de Kermesse par un parent commun pour ".$st->souset->student->nom." ".$st->souset->student->prenom;
