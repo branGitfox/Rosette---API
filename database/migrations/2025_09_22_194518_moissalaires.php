@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('w_id');
             $table->foreign('w_id')->references('id')->on('workers')->cascadeOnDelete();
             $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
+
         });
     }
 

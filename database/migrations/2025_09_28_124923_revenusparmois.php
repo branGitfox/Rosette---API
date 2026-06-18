@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
             $table->string('mois');
             $table->timestamps();
+            $table->index('ac_id');
+            $table->index('mois');
+            $table->index('created_at');
         });
     }
 

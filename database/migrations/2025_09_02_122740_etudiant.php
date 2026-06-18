@@ -33,6 +33,13 @@ return new class extends Migration
             $table->string('photo');
             $table->timestamps();
             $table->boolean('enfantProf');
+            $table->index('nom');
+            $table->index('prenom');
+            $table->index('matricule');
+            $table->index('ecole');
+            $table->index('dateNaissance');
+            $table->index('enfantProf');
+            $table->index('created_at');
         });
     }
 

@@ -20,6 +20,15 @@ return new class extends Migration
             $table->foreign('et_id')->references('id')->on('sousetudiants')->cascadeOnDelete();
             $table->unsignedBigInteger('ac_id');
             $table->foreign('ac_id')->references('id')->on('acs')->cascadeOnDelete();
+            // Index
+            $table->index('et_id');
+            $table->index('ac_id');
+            $table->index('payé');
+            $table->index('created_at');
+
+// Recherches fréquentes
+            $table->index(['et_id', 'ac_id']);
+            $table->index(['et_id', 'payé']);
         });
     }
 

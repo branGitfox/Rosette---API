@@ -19,6 +19,10 @@ return new class extends Migration
             $table->boolean('sexe');
             $table->string('adresse');
             $table->integer('salaire_base');
+            $table->index('nom');
+            $table->index('prenom');
+            $table->index(['nom', 'prenom']);
+            $table->index('sexe');
         });
     }
 

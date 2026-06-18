@@ -6,6 +6,7 @@ use App\Models\Admissions;
 use App\Models\Sousetudiants;
 use App\Models\Studentdroits;
 use Illuminate\Http\Request;
+use Mockery\Exception;
 
 class SousetudiantsController extends Controller
 {
@@ -46,6 +47,10 @@ class SousetudiantsController extends Controller
         $sous_etudiant_updateed = Sousetudiants::findOrFail($id);
 
         $moyenne_admission = Admissions::where('ac_id', $sous_etudiant_updateed->ac_id)->first();
+
+        if ($moyenne_admission == null){
+            throw new \Exception("Moyenne d'admission pas configuré pour cette année scolaire");
+        }
 
         if($sous_etudiant_updateed->note1 && $sous_etudiant_updateed->note2&&$sous_etudiant_updateed->note3&&$sous_etudiant_updateed->noteTotal){
                 $s = Sousetudiants::where('id', $sous_etudiant_updateed->id)->with('classe')->first();

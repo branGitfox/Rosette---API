@@ -25,6 +25,16 @@ return new class extends Migration
             $table->decimal('note2')->default(0);
             $table->decimal('note3')->default(0);
             $table->timestamps();
+
+            $table->index('cl_id');
+            $table->index('et_id');
+            $table->index('ac_id');
+            $table->index('sa_id');
+            $table->index('created_at');
+
+
+            $table->index(['cl_id', 'ac_id']);
+            $table->index(['et_id', 'ac_id']);
         });
     }
 
