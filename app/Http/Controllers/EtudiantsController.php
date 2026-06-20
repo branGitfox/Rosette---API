@@ -399,18 +399,32 @@ public function suspendre($id, Request $request, AuditsController $audit){
 }
 
 public function unsuspend($id, Request $request, AuditsController $audit){
-    $sous_etudiant = Sousetudiants::where('et_id', $id)->latest()->first();
+    $sous_etudiant = Sousetudiants::where('et_id', $id)->with('classe')->latest()->first();
     $totalMarks = $sous_etudiant->noteTotal;
+    $classe = $sous_etudiant->classe;
+
+    if($classe->niveau == "primaire" || $classe->niveau == "college"){
+        $norm_avg =  $classe->note;
+        $norm_delib = $classe->par_delib;
+    }else{
+        $norm_avg =  $classe->note_pre;
+        $norm_delib = $classe->par_delib_pre;
+    }
     $moyenne_admission = Admissions::where('ac_id', $sous_etudiant->ac_id)->first();
-    if($totalMarks >= $moyenne_admission->note){
+    $by_delib = 0;
+    if($totalMarks >= $norm_avg){
         $status = 'admis';
+    }elseif($totalMarks <= $norm_avg && $totalMarks >= $norm_delib){
+        $status = 'admis';
+        $by_delib = 1;
+
     }else{
         $status = 'redoublé';
     }
     $etudiant = Sousetudiants::where('et_id', $id)->with('student')->latest()->first();
     $message = 'Lever la suspension d\'un etudiant '. $etudiant->student->nom.' '.$etudiant->student->prenom;
     $audit->listen('Étudiants', $message, $request->user()->id);
-    Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => $status]);
+    Sousetudiants::where('et_id', $id)->latest()->first()->update(['status_admissions' => $status, 'by_delib' => $by_delib]);
     return response()->json(['message' => 'Suspension Levé']);
 }
 

@@ -348,7 +348,8 @@ Route::put('monthbylevels/{id}', [MonthbylevelsController::class, 'updates'])->m
 Route::delete('monthbylevels/{id}', [MonthbylevelsController::class, 'deletes'])->middleware('auth:sanctum');
 
 
-Route::get('isold/{id}/{se_id}', function(Request $request){
-    $e = \App\Models\Sousetudiants::where('et_id', $request->id)->where('created_at','<=', \App\Models\Sousetudiants::where('id', $request->id)->first()->created_at);
+Route::get('isold/{id}', function(Request $request){
+    $e = \App\Models\Sousetudiants::where('et_id', $request->id);
+
     return response()->json($e->count());
 })->middleware('auth:sanctum');
